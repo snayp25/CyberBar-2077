@@ -1,1 +1,1 @@
-TOKEN = "Your token/ваш токен"
+TOKEN = "Your token/Ваш токен"
