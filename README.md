@@ -8,3 +8,10 @@ ___________________________________
 Miro board link - https://miro.com/app/board/uXjVKvfnZJE=/
 ___________________________________
 Ссылка на миро доску - https://miro.com/app/board/uXjVKvfnZJE=/
+
+
+
+__________________________________
+Bot link - https://t.me/EightNightsInBar_bot
+__________________________________
+Ссылка на бота - https://t.me/EightNightsInBar_bot
