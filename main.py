@@ -48,7 +48,8 @@ def callback(call):
             item2 = types.InlineKeyboardButton('Часы⏰', callback_data='button_clocks')
             item3 = types.InlineKeyboardButton('Левая дверь🚪', callback_data='button_left_door')
             item4 = types.InlineKeyboardButton('Правая дверь🚪', callback_data='button_right_door')
-            markup.add(item1, item2, item3, item4)
+            item5 = types.InlineKeyboardButton('Магазин🏬', callback_data='button_shop')
+            markup.add(item1, item2, item3, item4, item5)
             bot.send_photo(call.message.chat.id, open('./Images/Game/security_room.jpeg', 'rb'))
             bot.send_message(call.message.chat.id, 'Вы устроились охранником в баре где недавно появились ИИ роботы, интересно, почему после появления роботов у них появился такой спрос на охрану?\nВаша задача, охранять бар до 6 утра(бар открывается в это время), вы можете смотреть камеры и закрывать двери, вы работаете 7 ночей, а потом вас заменит на время другой охранник, удачи!', reply_markup=markup)
             time.sleep(10)
@@ -218,6 +219,48 @@ def callback(call):
                 bot.send_photo(call.message.chat.id, open('./Images/Game/right_door_closed.jpg', 'rb'))
                 bot.send_message(call.message.chat.id, 'Дверь закрыта.', reply_markup=markup)
 
+        #Магазин
+        elif call.data == "button_shop":
+            markup = types.InlineKeyboardMarkup(row_width=1)
+            item1 = types.InlineKeyboardButton('Назад->', callback_data='back2')
+            item2 = types.InlineKeyboardButton('Ассортимент', callback_data='shop_assortiment')
+            markup.add(item1, item2)
+            bot.send_photo(call.message.chat.id, open('./Images/Game/shop.jpg', 'rb'))
+            bot.send_message(call.message.chat.id, f'<Добрый день, охранник Макс! Я продаю различные товары, которые могут вам помочь в работе. Не хотите взгялнуть?>', reply_markup=markup)
+        
+        elif call.data == "shop_assortiment":
+            markup = types.InlineKeyboardMarkup(row_width=1)
+            item1 = types.InlineKeyboardButton('Назад->', callback_data='button_shop')
+            for i in range(0, len(db_manager.show_assortiment())):
+                s =  'check_coins' + '|' + str(i)
+                item2 = types.InlineKeyboardButton(f'{db_manager.show_assortiment()[i][0]}        {db_manager.show_prices()[i][0]}💰    Осталось {db_manager.show_count()[i][0]} штук!', callback_data=s)
+                markup.add(item2)
+            markup.add(item1)
+            bot.send_photo(call.message.chat.id, open('./Images/Game/shop_assortiment.jpg', 'rb')) 
+            bot.send_message(call.message.chat.id, f'У вас {db_manager.show_coins("test")}', reply_markup=markup)
+        
+        elif 'check_coins' in call.data:
+            second_param = call.data.split('|')[1]
+            if int(db_manager.show_coins("test")) >= int(db_manager.show_prices()[int(second_param)][0]):
+                markup = types.InlineKeyboardMarkup(row_width=1)
+                s = 'sucsessfull_shopping'  + '|' + call.data.split('|')[1]
+                item1 = types.InlineKeyboardButton('Да', callback_data=s)   
+                item2 = types.InlineKeyboardButton('Назад->', callback_data='button_shop') 
+                markup.add(item1, item2)            
+                bot.send_message(call.message.chat.id, f'Вы уверены?', reply_markup=markup)  
+            else:
+                markup = types.InlineKeyboardMarkup(row_width=1)     
+                item1 = types.InlineKeyboardButton('Назад->', callback_data='button_shop')     
+                markup.add(item1)
+                bot.send_message(call.message.chat.id, f'У вас не хватает средств!', reply_markup=markup)  
+
+        elif 'sucsessfull_shopping' in call.data:
+            second_param = call.data.split('|')[1]
+            markup = types.InlineKeyboardMarkup(row_width=1)
+            item1 = types.InlineKeyboardButton('Назад->', callback_data='button_shop')
+            markup.add(item1)
+            bot.send_message(call.message.chat.id, f'Вы приобрели {db_manager.show_assortiment()[int(second_param)][0]}!', reply_markup=markup)  
+
 
         elif call.data == "back2":
             markup = types.InlineKeyboardMarkup(row_width=2)
@@ -225,7 +268,8 @@ def callback(call):
             item2 = types.InlineKeyboardButton('Часы⏰', callback_data='button_clocks')
             item3 = types.InlineKeyboardButton('Левая дверь🚪', callback_data='button_left_door')
             item4 = types.InlineKeyboardButton('Правая дверь🚪', callback_data='button_right_door')
-            markup.add(item1, item2, item3, item4)
+            item5 = types.InlineKeyboardButton('Магазин🏬', callback_data='button_shop')
+            markup.add(item1, item2, item3, item4, item5)
             bot.send_photo(call.message.chat.id, open('./Images/Game/security_room.jpeg', 'rb'), reply_markup=markup)
        
         elif call.data == "back1":
