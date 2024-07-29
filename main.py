@@ -152,7 +152,7 @@ def callback(call):
             item1 = types.InlineKeyboardButton('Назад->', callback_data='button_camera')
             markup.add(item1)
             if cleaner_guest == True:
-                bot.send_photo(call.message.chat.id, open('./Images/Game/guest_cleaner.jpeg', 'rb'))
+                bot.send_photo(call.message.chat.id, open('./Images/Game/guest_cleaner.png', 'rb'))
             else:
                 bot.send_photo(call.message.chat.id, open('./Images/Game/guest_room.jpeg', 'rb'))
             bot.send_message(call.message.chat.id, 'Комната для гостей', reply_markup=markup)
