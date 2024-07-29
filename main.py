@@ -50,8 +50,15 @@ def menu(message):
 
 @bot.callback_query_handler(func=lambda call:True)
 def callback(call):
+    global cleaner_door_right
+    global cleaner_door_left
+    global cleaner_guest
+    global cleaner_vine
+    global cleaner_storage 
+    #global cleaner_vent |я убрал вентиляцию покачто так как надо потом будет сделать её открытие и закрытие
     if call.message:
         if call.data == 'button_game':  
+            
             markup = types.InlineKeyboardMarkup(row_width=2)
             item1 = types.InlineKeyboardButton('Камеры📸', callback_data='button_camera')
             item2 = types.InlineKeyboardButton('Часы⏰', callback_data='button_clocks')
@@ -144,7 +151,10 @@ def callback(call):
             markup = types.InlineKeyboardMarkup(row_width=1)
             item1 = types.InlineKeyboardButton('Назад->', callback_data='button_camera')
             markup.add(item1)
-            bot.send_photo(call.message.chat.id, open('./Images/Game/guest_room.jpeg', 'rb'))
+            if cleaner_guest == True:
+                bot.send_photo(call.message.chat.id, open('./Images/Game/guest_cleaner.jpeg', 'rb'))
+            else:
+                bot.send_photo(call.message.chat.id, open('./Images/Game/guest_room.jpeg', 'rb'))
             bot.send_message(call.message.chat.id, 'Комната для гостей', reply_markup=markup)
         
         #Вентиляция
@@ -309,12 +319,6 @@ def callback(call):
             bot.send_message(call.message.chat.id, 'Меню:', reply_markup=markup)
         elif go_cleaner == True:
             a = randint(1, 30)
-            global cleaner_door_right
-            global cleaner_door_left
-            global cleaner_guest
-            global cleaner_vine
-            global cleaner_storage 
-            #global cleaner_vent |я убрал вентиляцию покачто так как надо потом будет сделать её открытие и закрытие
             if a == 29:
                 cleaner_door_left = True
                 cleaner_storage = False
@@ -436,4 +440,5 @@ if __name__ == '__main__':
         if game_started == True:
             polling_timer.start()
             polling_timings.start()
+            break
         
