@@ -2,23 +2,26 @@
 #там где роботы стоит пустой комментарий. Надеюсь ты умеешь работать с колбеком а если нет то посмотри колбек внимательно.
 #Также переменные которые под ботом потом изменяются в функциях. Камеры также не работают.
 #И да, логика импортирована как db_manager. Также то что победы и деньги в формате стринг это нормально, по другому код будет ломаться.
-
-
 from random import *
 from config import *
 from telebot import *
 import logic as db_manager
 import time, threading, art
 
-
 bot = TeleBot(TOKEN)
 timer = 630 
 game_started = False
 end = False
+go_cleaner = False #Эта переменная отвечает за то, пойдет ли уборщик или нет
+go_сrazy = False #А эта за психа.
+go_hoverboard = False #За ховерборд
+go_cyborg = False #КИБОРГ УБЫЙЦА
+go_vodka = False #А эта переменная за алкоголика отвечает.
+go_barmen = False #Ну и бармен
+go_terminator = False #Терминатор, тссс🤫
 left_door_statement = True #Булевая переменная, отвечающая за состояние левой двери
 right_door_statement = False #Булевая переменная, отвечающая за состояние правой двери
-
-
+night = 1 #Эта переменная отвечает за счет ночей, нужно для того чтобы работали роботы
 @bot.message_handler(commands=["start"])
 def start(message):
     bot.send_message(message.chat.id, "Привет, я игровой хоррор бот, чтобы узнать мои комманды напиши /help.")
@@ -41,7 +44,6 @@ def menu(message):
 @bot.callback_query_handler(func=lambda call:True)
 def callback(call):
     if call.message:
-
         if call.data == 'button_game':  
             markup = types.InlineKeyboardMarkup(row_width=2)
             item1 = types.InlineKeyboardButton('Камеры📸', callback_data='button_camera')
@@ -61,7 +63,9 @@ def callback(call):
         elif call.data == 'button_profile':
             markup = types.InlineKeyboardMarkup(row_width=5)
             item1 = types.InlineKeyboardButton('Назад->', callback_data='back1')
-            bot.send_message(call.message.chat.id, f'Ваш профиль:(первое это имя, второе это победы, а третье это деньги.) {db_manager.show_profile}', reply_markup=markup)
+            username = call.message.from_user.username
+            profile = db_manager.show_profile(username)
+            bot.send_message(call.message.chat.id, f'Ваш профиль:(первое это имя, второе это победы, а третье это деньги.) {profile}', reply_markup=markup)
         
         elif call.data == 'button_camera':
             markup = types.InlineKeyboardMarkup(row_width=3)
@@ -284,7 +288,7 @@ def callback(call):
     if end == True:
         bot.send_message(call.message.chat.id, f"{art.tprint('7:00 AM')}")
         username = call.message.from_user.username
-        db_manager.add_wins(username, "1", "10")
+        db_manager.add_coins_wins(username, "1", "10")
 
 
 def bot_thread():
@@ -292,22 +296,51 @@ def bot_thread():
 
 
 def timer_thread():
+    #Заметил ошибку из-за которой таймер не шел, починил.
     global end
+    global timer
     while True:
+        time.sleep(1)
         timer -= 1
+        print(timer)
         if timer == 0:
             end = True
             break
-
-
-def timing_thread(message):
-    #
-    #
-    #
-    #
-    pass
-
-
+def timing_thread():
+    global timer, go_cleaner, go_hoverboard, go_сrazy, go_cyborg, go_vodka, go_barmen, night
+    while True:
+        if night == 1:
+            if timer >= 541: #Рандом до 1 часа ночи(в игре) пойдет ли уборщик или нет(шанс очень маленький)
+                a = randint(1, 100)
+                if a == 50:
+                    go_cleaner = True
+            elif timer <= 540: #Рандом пойдет ли уборщик в час ночи.
+                a = randint(1, 5)
+                if a == 2 or 3:
+                    go_cleaner = True
+                else:
+                    time.sleep(15)
+                    go_cleaner = True
+            elif timer <= 450: #Мне дальше лень писать комментарии так что все остальное это тоже рандом на уборщика первой ночью.
+                a = randint(1, 5)
+                if a == 2 or 3:
+                    go_cleaner = True
+                else:
+                    time.sleep(15)
+                    a = randint(1,3)
+                    if a == 2 or 3:
+                        go_cleaner == True
+                    else:
+                        time.sleep(35)
+                        go_cleaner = True
+            elif timer <= 360:
+                a = randint(1, 5)
+                if a == 2 or 3:
+                    go_cleaner = True
+                else:
+                    time.sleep(20)
+                    go_cleaner = True
+        
 if __name__ == '__main__':
     polling_thread = threading.Thread(target=bot_thread)
     polling_timer = threading.Thread(target=timer_thread)
