@@ -26,9 +26,9 @@ go_vodka = False #А эта переменная за алкоголика от�
 go_barmen = False #Ну и бармен
 go_terminator = False #Терминатор, тссс🤫
 left_door_statement = True #Булевая переменная, отвечающая за состояние левой двери
-right_door_statement = False #Булевая переменная, отвечающая за состояние правой двери
+right_door_statement = True #Булевая переменная, отвечающая за состояние правой двери
 night = 1 #Эта переменная отвечает за счет ночей, нужно для того чтобы работали роботы
-
+end_bat = False
 @bot.message_handler(commands=["start"])
 def start(message):
     bot.send_message(message.chat.id, "Привет, я игровой хоррор бот, чтобы узнать мои комманды напиши /help.")
@@ -55,10 +55,12 @@ def callback(call):
     global cleaner_guest
     global cleaner_vine
     global cleaner_storage 
-    #global cleaner_vent |я убрал вентиляцию покачто так как надо потом будет сделать её открытие и закрытие
+    global game_started
+    global left_door_statement
+    global right_door_statement
+    global end_bad
     if call.message:
         if call.data == 'button_game':  
-            
             markup = types.InlineKeyboardMarkup(row_width=2)
             item1 = types.InlineKeyboardButton('Камеры📸', callback_data='button_camera')
             item2 = types.InlineKeyboardButton('Часы⏰', callback_data='button_clocks')
@@ -69,9 +71,7 @@ def callback(call):
             bot.send_photo(call.message.chat.id, open('./Images/Game/security_room.jpeg', 'rb'))
             bot.send_message(call.message.chat.id, 'Вы устроились охранником в баре где недавно появились ИИ роботы, интересно, почему после появления роботов у них появился такой спрос на охрану?\nВаша задача, охранять бар до 6 утра(бар открывается в это время), вы можете смотреть камеры и закрывать двери, вы работаете 7 ночей, а потом вас заменит на время другой охранник, удачи!', reply_markup=markup)
             time.sleep(10)
-            global game_started
-            global left_door_statement
-            global right_door_statement
+
             game_started = True
         
         elif call.data == 'button_profile':
@@ -151,10 +151,7 @@ def callback(call):
             markup = types.InlineKeyboardMarkup(row_width=1)
             item1 = types.InlineKeyboardButton('Назад->', callback_data='button_camera')
             markup.add(item1)
-            if cleaner_guest == True:
-                bot.send_photo(call.message.chat.id, open('./Images/Game/guest_cleaner.png', 'rb'))
-            else:
-                bot.send_photo(call.message.chat.id, open('./Images/Game/guest_room.jpeg', 'rb'))
+            bot.send_photo(call.message.chat.id, open('./Images/Game/guest_room.jpeg', 'rb'))
             bot.send_message(call.message.chat.id, 'Комната для гостей', reply_markup=markup)
         
         #Вентиляция
@@ -319,6 +316,7 @@ def callback(call):
             bot.send_message(call.message.chat.id, 'Меню:', reply_markup=markup)
         elif go_cleaner == True:
             a = randint(1, 30)
+            #global cleaner_vent |я убрал вентиляцию покачто так как надо потом будет сделать её открытие и закрытие
             if a == 29:
                 cleaner_door_left = True
                 cleaner_storage = False
@@ -338,8 +336,22 @@ def callback(call):
             bot.send_message(call.message.chat.id, f"{art.tprint('7:00 AM')}")
             username = call.message.from_user.username
             db_manager.add_coins_wins(username, "1", "10")
-
-
+            bot.send_message(call.message.chat.id, "Вы победили! (+1 победа, +10 монет)")
+        elif end == True and bad_end == True:
+            bot.send_message(call.message.chat.id, "Произошла какая то ошибка, извините за неудобства.")
+            game_started == False
+        elif cleaner_door_right == True and right_door_statement == True:
+            time.sleep(5)
+            if door_left_statement != False:
+                bot.send_message(call.message.chat.id, "Вы проиграли, удалите переписку и зайдите в бота заного чтобы попробовать еще раз")
+                end_bad = True
+                game_started == False
+        elif cleaner_door_left == True and left_door_statement == True:
+            time.sleep(5)
+            if door_left_statement != False:
+                bot.send_message(call.message.chat.id, "Вы проиграли, удалите переписку и зайдите в бота заного чтобы попробовать еще раз")
+                end_bad = True
+                game_started == False
 def bot_thread():
     bot.infinity_polling(print("Bot started."), none_stop=True)
 
@@ -440,5 +452,4 @@ if __name__ == '__main__':
         if game_started == True:
             polling_timer.start()
             polling_timings.start()
-            break
         
