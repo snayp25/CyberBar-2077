@@ -624,7 +624,7 @@ def timer_thread():
             ventilation_statement = True
 
 def timing_thread():
-    global timer, go_cleaner, go_hoverboard, go_сrazy, go_cyborg, go_vodka, go_barmen, night, game_started, end, bad_end
+    global timer, go_cleaner, go_hoverboard, go_сrazy, go_cyborg, go_vodka, go_barmen, night, game_started, end, end_bad
     go_cleaner = False
     if game_started != True:
         print("Game not started")
@@ -690,7 +690,7 @@ def timing_thread():
                         time.sleep(5)
                         go_cleaner = False
                         print(timer)
-                elif end or bad_end == True:
+                elif end or end_bad == True:
                     break
 
 if __name__ == '__main__':
