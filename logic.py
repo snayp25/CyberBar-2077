@@ -17,14 +17,15 @@ def add_coins_wins(username, win, coin):
         coins = ""
         for row in result1:
             coins += " ".join(row)
-
         coins = coins + coin 
+
         result2 = cur.execute("SELECT wins FROM players WHERE username is ?", ([username]))
         wins = ""
 
         for row in result2:
             wins += " ".join(row)
         wins = wins + win
+
         if username in names:
             cur.execute("INSERT INTO players (wins) VALUES (?)", (wins, coins))
         else:
@@ -40,6 +41,19 @@ def show_coins(username):
         for row in result:
             coins += " ".join(row)
         return coins
+
+
+def update_coins(username, coins_new):
+    conn = sqlite3.connect(DB)
+    with conn:
+        cur = conn.cursor() 
+        cur.execute("UPDATE players SET coins = ? WHERE username is ?", ([ coins_new, username]))
+
+def update_assortiment(product_name, value):
+    conn = sqlite3.connect(DB_S)
+    with conn:
+        cur = conn.cursor() 
+        cur.execute("UPDATE products SET product_count = ? WHERE product_name is ?", ([value, product_name]))
 
 def shop_assortiment():
     conn = sqlite3.connect(DB_S)
@@ -120,7 +134,8 @@ def show_profile(username):
     
 
 if __name__ == "__main__":
-    add_coins_wins("test", "0", "5")
+    #add_coins_wins("test", "0", "5")
     #shop_assortiment()
     show_assortiment()
-    print(show_profile("test"))
+    #print(update_coins("test", "5"))
+    #print(show_profile("test"))
