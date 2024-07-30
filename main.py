@@ -28,7 +28,11 @@ go_terminator = False #Терминатор, тссс🤫
 left_door_statement = True #Булевая переменная, отвечающая за состояние левой двери
 right_door_statement = True #Булевая переменная, отвечающая за состояние правой двери
 night = 1 #Эта переменная отвечает за счет ночей, нужно для того чтобы работали роботы
-end_bat = False
+end_bad = False
+battery = 4
+battery_timer = random.randint(100, 201)
+battery_statement = True 
+
 @bot.message_handler(commands=["start"])
 def start(message):
     bot.send_message(message.chat.id, "Привет, я игровой хоррор бот, чтобы узнать мои комманды напиши /help.")
@@ -59,7 +63,12 @@ def callback(call):
     global left_door_statement
     global right_door_statement
     global end_bad
+    global battery
+    global battery_timer
+    global battery_statement
+
     if call.message:
+
         if call.data == 'button_game':  
             markup = types.InlineKeyboardMarkup(row_width=2)
             item1 = types.InlineKeyboardButton('Камеры📸', callback_data='button_camera')
@@ -82,6 +91,17 @@ def callback(call):
             bot.send_message(call.message.chat.id, f'Ваш профиль:(первое это имя, второе это победы, а третье это деньги.) {profile}', reply_markup=markup)
         
         elif call.data == 'button_camera':
+
+            if battery_timer < 75 and battery_timer > 50:
+                battery = 3
+            elif battery_timer < 50  and battery_timer > 25:
+                battery = 2
+            elif battery_timer < 25  and battery_timer > 0:
+                battery = 1
+            elif battery_timer <= 0: 
+                battery = 0
+                battery_statement = False
+
             markup = types.InlineKeyboardMarkup(row_width=3)
             item1 = types.InlineKeyboardButton('Камера📷1', callback_data='button_camera1')
             item2 = types.InlineKeyboardButton('Камера📷2', callback_data='button_camera2')
@@ -89,9 +109,14 @@ def callback(call):
             item4 = types.InlineKeyboardButton('Камера📷4', callback_data='button_camera4')
             item5 = types.InlineKeyboardButton('Камера📷5', callback_data='button_camera5')
             item6 = types.InlineKeyboardButton('Назад->', callback_data='back2')
-            markup.add(item1, item2, item3, item4, item5, item6) 
-            bot.send_photo(call.message.chat.id, open('./Images/Game/cameras_plan.jpeg', 'rb'))
-            bot.send_message(call.message.chat.id, 'Камеры:', reply_markup=markup)
+
+            if battery_statement:
+                markup.add(item1, item2, item3, item4, item5, item6) 
+                bot.send_photo(call.message.chat.id, open('./Images/Game/cameras_plan.jpeg', 'rb'))
+                bot.send_message(call.message.chat.id, f'Заряд планшета равен: {battery} Камеры:', reply_markup=markup)
+            else:
+                markup.add(item6) 
+                bot.send_message(call.message.chat.id, f'Планшет разряжен! Дополнительную батарею можно приобрести в магазине!', reply_markup=markup)
         
         elif call.data == 'button_clocks':
             markup = types.InlineKeyboardMarkup(row_width=5)
@@ -126,6 +151,7 @@ def callback(call):
 
         #Камера в каморке уборщика
         elif call.data == "button_camera1":
+            battery_timer -= 50
             markup = types.InlineKeyboardMarkup(row_width=1)
             item1 = types.InlineKeyboardButton('Назад->', callback_data='button_camera')
             markup.add(item1)
@@ -137,6 +163,7 @@ def callback(call):
 
         #Камера у бара 
         elif call.data == "button_camera2":
+            battery_timer -= 5
             markup = types.InlineKeyboardMarkup(row_width=1)
             item1 = types.InlineKeyboardButton('Назад->', callback_data='button_camera')
             markup.add(item1)
@@ -148,6 +175,7 @@ def callback(call):
 
         #Камера в комнате гостей
         elif call.data == "button_camera3":
+            battery_timer -= 5
             markup = types.InlineKeyboardMarkup(row_width=1)
             item1 = types.InlineKeyboardButton('Назад->', callback_data='button_camera')
             markup.add(item1)
@@ -156,6 +184,7 @@ def callback(call):
         
         #Вентиляция
         elif call.data == "button_camera4":
+            battery_timer -= 5
             markup = types.InlineKeyboardMarkup(row_width=1)
             item1 = types.InlineKeyboardButton('Назад->', callback_data='button_camera')
             markup.add(item1)
@@ -164,6 +193,7 @@ def callback(call):
 
         #Камера без сигнала(я просто не придумал, что сюда поставить ))) )
         elif call.data == "button_camera5":
+            battery_timer -= 5
             markup = types.InlineKeyboardMarkup(row_width=1)
             item1 = types.InlineKeyboardButton('Назад->', callback_data='button_camera')
             markup.add(item1)
@@ -255,7 +285,13 @@ def callback(call):
                 bot.send_photo(call.message.chat.id, open('./Images/Game/right_door_closed.jpg', 'rb'))
                 bot.send_message(call.message.chat.id, 'Дверь закрыта.', reply_markup=markup)
 
+
+
+
         #Магазин
+
+
+
         elif call.data == "button_shop":
             markup = types.InlineKeyboardMarkup(row_width=1)
             item1 = types.InlineKeyboardButton('Назад->', callback_data='back2')
@@ -269,21 +305,26 @@ def callback(call):
             item1 = types.InlineKeyboardButton('Назад->', callback_data='button_shop')
             for i in range(0, len(db_manager.show_assortiment())):
                 s =  'check_coins' + '|' + str(i)
-                item2 = types.InlineKeyboardButton(f'{db_manager.show_assortiment()[i][0]}        {db_manager.show_prices()[i][0]}💰    Осталось {db_manager.show_count()[i][0]} штук!', callback_data=s)
+                item2 = types.InlineKeyboardButton(f'{db_manager.show_assortiment()[i][0]}        {db_manager.show_prices()[i][0]}💰        Осталось {db_manager.show_count()[i][0]} штук!', callback_data=s)
                 markup.add(item2)
             markup.add(item1)
             bot.send_photo(call.message.chat.id, open('./Images/Game/shop_assortiment.jpg', 'rb')) 
-            bot.send_message(call.message.chat.id, f'У вас {db_manager.show_coins("test")}', reply_markup=markup)
+            bot.send_message(call.message.chat.id, f'У вас {db_manager.show_coins("test")}💰', reply_markup=markup)
         
         elif 'check_coins' in call.data:
             second_param = call.data.split('|')[1]
-            if int(db_manager.show_coins("test")) >= int(db_manager.show_prices()[int(second_param)][0]):
+            if int(db_manager.show_coins("test")) >= int(db_manager.show_prices()[int(second_param)][0]) and int(db_manager.show_count()[int(second_param)][0]) > 0:
                 markup = types.InlineKeyboardMarkup(row_width=1)
                 s = 'sucsessfull_shopping'  + '|' + call.data.split('|')[1]
                 item1 = types.InlineKeyboardButton('Да', callback_data=s)   
                 item2 = types.InlineKeyboardButton('Назад->', callback_data='button_shop') 
                 markup.add(item1, item2)            
                 bot.send_message(call.message.chat.id, f'Вы уверены?', reply_markup=markup)  
+            elif int(db_manager.show_count()[int(second_param)][0]) == 0:
+                markup = types.InlineKeyboardMarkup(row_width=1)     
+                item1 = types.InlineKeyboardButton('Назад->', callback_data='button_shop')     
+                markup.add(item1)
+                bot.send_message(call.message.chat.id, f'Товар закончился!', reply_markup=markup)  
             else:
                 markup = types.InlineKeyboardMarkup(row_width=1)     
                 item1 = types.InlineKeyboardButton('Назад->', callback_data='button_shop')     
@@ -294,8 +335,22 @@ def callback(call):
             second_param = call.data.split('|')[1]
             markup = types.InlineKeyboardMarkup(row_width=1)
             item1 = types.InlineKeyboardButton('Назад->', callback_data='button_shop')
+
+            if db_manager.show_assortiment()[int(second_param)][0] == 'Battery':
+                battery_statement = True
+                battery_timer = 100
+                battery = 4
+
+            les_coins = int(db_manager.show_coins("test"))-int(db_manager.show_prices()[int(second_param)][0])
+            les_value = int(db_manager.show_count()[int(second_param)][0])-1
+
+            db_manager.update_coins("test", str(les_coins))
+            db_manager.update_assortiment(db_manager.show_assortiment()[int(second_param)][0], str(les_value))
+
             markup.add(item1)
             bot.send_message(call.message.chat.id, f'Вы приобрели {db_manager.show_assortiment()[int(second_param)][0]}!', reply_markup=markup)  
+
+
 
 
         elif call.data == "back2":
@@ -314,6 +369,7 @@ def callback(call):
             item2 = types.InlineKeyboardButton('Профиль', callback_data='button_profile')
             markup.add(item1,item2)
             bot.send_message(call.message.chat.id, 'Меню:', reply_markup=markup)
+
         elif go_cleaner == True:
             a = randint(1, 30)
             #global cleaner_vent |я убрал вентиляцию покачто так как надо потом будет сделать её открытие и закрытие
@@ -332,26 +388,31 @@ def callback(call):
             # else:
             #     cleaner_vent = True
             #     cleaner_storage = False
+
         elif end == True:
             bot.send_message(call.message.chat.id, f"{art.tprint('7:00 AM')}")
             username = call.message.from_user.username
             db_manager.add_coins_wins(username, "1", "10")
             bot.send_message(call.message.chat.id, "Вы победили! (+1 победа, +10 монет)")
-        elif end == True and bad_end == True:
+
+        elif end == True and end_bad == True:
             bot.send_message(call.message.chat.id, "Произошла какая то ошибка, извините за неудобства.")
             game_started == False
+
         elif cleaner_door_right == True and right_door_statement == True:
             time.sleep(5)
-            if door_left_statement != False:
+            if left_door_statement != False:
                 bot.send_message(call.message.chat.id, "Вы проиграли, удалите переписку и зайдите в бота заного чтобы попробовать еще раз")
                 end_bad = True
                 game_started == False
+
         elif cleaner_door_left == True and left_door_statement == True:
             time.sleep(5)
-            if door_left_statement != False:
+            if left_door_statement != False:
                 bot.send_message(call.message.chat.id, "Вы проиграли, удалите переписку и зайдите в бота заного чтобы попробовать еще раз")
                 end_bad = True
                 game_started == False
+    
 def bot_thread():
     bot.infinity_polling(print("Bot started."), none_stop=True)
 
@@ -366,6 +427,7 @@ def timer_thread():
         if timer == 0:
             end = True
             break
+
 def timing_thread():
     global timer, go_cleaner, go_hoverboard, go_сrazy, go_cyborg, go_vodka, go_barmen, night
     while True:
@@ -374,6 +436,7 @@ def timing_thread():
                 a = randint(1, 100)
                 if a == 50:
                     go_cleaner = True
+
             elif timer <= 540: #Рандом пойдет ли уборщик в час ночи.
                 a = randint(1, 5)
                 if a == 2 or 3:
@@ -442,8 +505,12 @@ def timing_thread():
                 else:
                     time.sleep(20)
                     go_cleaner = True
-        
+
+
 if __name__ == '__main__':
+    db_manager.update_coins("test", '100')
+    db_manager.update_assortiment("Tablet", '1')
+    db_manager.update_assortiment("Battery", '4')
     polling_thread = threading.Thread(target=bot_thread)
     polling_timer = threading.Thread(target=timer_thread)
     polling_timings = threading.Thread(target=timing_thread)
@@ -452,4 +519,3 @@ if __name__ == '__main__':
         if game_started == True:
             polling_timer.start()
             polling_timings.start()
-        
