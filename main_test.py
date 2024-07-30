@@ -624,70 +624,74 @@ def timer_thread():
             ventilation_statement = True
 
 def timing_thread():
-    global timer, go_cleaner, go_hoverboard, go_сrazy, go_cyborg, go_vodka, go_barmen, night
+    global timer, go_cleaner, go_hoverboard, go_сrazy, go_cyborg, go_vodka, go_barmen, night, game_started, end, bad_end
     go_cleaner = False
-    while True:
-        if night == 1:
-            if timer >= 541: #Рандом до 1 часа ночи(в игре) пойдет ли уборщик или нет(шанс очень маленький)
-                time.sleep(5)
-                a = randint(1, 100)
-                if a == 50:
-                    go_cleaner = True
-                    print(go_cleaner)
-                else: 
-                    print(timer)
-
-            elif timer <= 540 and timer > 450: #Рандом пойдет ли уборщик в час ночи.
-                time.sleep(5)
-                a = randint(1, 5)
-                if a == 2 or a == 3:
-                    go_cleaner = True
-                    print(go_cleaner)
-                else:
-                    print('z')
+    if game_started != True:
+        print("Game not started")
+    else:
+        while True:
+            if night == 1:
+                if timer >= 541: #Рандом до 1 часа ночи(в игре) пойдет ли уборщик или нет(шанс очень маленький)
                     time.sleep(5)
-                    go_cleaner = False
-                    print(timer)
-
-            elif timer <= 450 and timer > 360: #Мне дальше лень писать комментарии так что все остальное это тоже рандом на уборщика первой ночью.
-                time.sleep(5)
-                a = randint(1, 5)
-                if a == 2 or 3:
-                    go_cleaner = True
-                else:
+                    a = randint(1, 100)
+                    if a == 50:
+                        go_cleaner = True
+                        print(go_cleaner)
+                    else: 
+                        print(timer)
+    
+                elif timer <= 540 and timer > 450: #Рандом пойдет ли уборщик в час ночи.
                     time.sleep(5)
-                    a = randint(1,4)
+                    a = randint(1, 5)
                     if a == 2 or a == 3:
-                        go_cleaner == True
+                        go_cleaner = True
                         print(go_cleaner)
                     else:
                         print('z')
+                        time.sleep(5)
                         go_cleaner = False
                         print(timer)
-
-            elif timer <= 360 and timer > 80:
-                time.sleep(5)
-                a = randint(1, 5)
-                if a == 2 or a == 3:
-                    go_cleaner = True
-                    print(go_cleaner)
-                else:
-                    print('z')
+    
+                elif timer <= 450 and timer > 360: #Мне дальше лень писать комментарии так что все остальное это тоже рандом на уборщика первой ночью.
                     time.sleep(5)
-                    go_cleaner = True
-                    print(timer)
-
-            elif timer <= 80:
-                time.sleep(5)
-                a = randint(1, 4)
-                if a == 2 or a == 3 or a == 4:
-                    go_cleaner = True
-                else:
-                    print('z')
+                    a = randint(1, 5)
+                    if a == 2 or 3:
+                        go_cleaner = True
+                    else:
+                        time.sleep(5)
+                        a = randint(1,4)
+                        if a == 2 or a == 3:
+                            go_cleaner == True
+                            print(go_cleaner)
+                        else:
+                            print('z')
+                            go_cleaner = False
+                            print(timer)
+    
+                elif timer <= 360 and timer > 80:
                     time.sleep(5)
-                    go_cleaner = False
-                    print(timer)
-
+                    a = randint(1, 5)
+                    if a == 2 or a == 3:
+                        go_cleaner = True
+                        print(go_cleaner)
+                    else:
+                        print('z')
+                        time.sleep(5)
+                        go_cleaner = True
+                        print(timer)
+    
+                elif timer <= 80:
+                    time.sleep(5)
+                    a = randint(1, 4)
+                    if a == 2 or a == 3 or a == 4:
+                        go_cleaner = True
+                    else:
+                        print('z')
+                        time.sleep(5)
+                        go_cleaner = False
+                        print(timer)
+                elif end or bad_end == True:
+                    break
 
 if __name__ == '__main__':
     db_manager.update_coins("test", '100')
