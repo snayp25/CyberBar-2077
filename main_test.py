@@ -291,10 +291,6 @@ def callback(call):
             else: #Дверь закрыта
                 item1 = types.InlineKeyboardButton('Открыть', callback_data='change_left_door_statement')   
                 markup.add(item1, item2)
-                if cleaner_door_left == True:
-                    bot.send_photo(call.message.chat.id, open('./Images/Game/left_door_cleaner.png', 'rb'))
-                else:
-                    bot.send_photo(call.message.chat.id, open('./Images/Game/left_door_closed.jpg', 'rb'))
                 bot.send_message(call.message.chat.id, 'Дверь закрыта.', reply_markup=markup)
 
 
