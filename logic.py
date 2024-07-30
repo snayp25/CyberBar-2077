@@ -1,13 +1,36 @@
 import sqlite3
 from config import *
 
+def add_user(username, wins, coins, status):
+    conn = sqlite3.connect(DB)
+    with conn:
+        cur = conn.cursor()
+        result = cur.execute("SELECT username FROM players")
+        names = ""
+        for row in result:
+            names += " ".join(row)
+        if username in names:
+            print("Такой пользователь уже существует!")
+        else:
+            cur.execute("INSERT INTO players (username, wins, coins,  status) VALUES (?, ?)", (username, wins, coins, status))
 
-
+def check_status(username):
+    conn = sqlite3.connect(DB)
+    with conn:
+        cur = conn.cursor()
+        result = cur.execute("SELECT username FROM players")
+        names = ""
+        for row in result:
+            names += " ".join(row)
+        if username in names:
+            f = cur.execute("SELECT status FROM players WHERE username is ?", ([username]))
+            return f.fetchall()[0][0]
+    
 def add_coins_wins(username, win, coin):
     conn = sqlite3.connect(DB)
     with conn:
         cur = conn.cursor()
-        cur.execute("CREATE TABLE players (username, wins, coins)")
+        cur.execute("CREATE TABLE IF NOT EXISTS players (username, wins, coins, status)")
         result = cur.execute("SELECT username FROM players")
         names = ""
         for row in result:
@@ -21,13 +44,12 @@ def add_coins_wins(username, win, coin):
 
         result2 = cur.execute("SELECT wins FROM players WHERE username is ?", ([username]))
         wins = ""
-
         for row in result2:
             wins += " ".join(row)
         wins = wins + win
 
         if username in names:
-            cur.execute("INSERT INTO players (wins) VALUES (?)", (wins, coins))
+            cur.execute("UPDATE players SET wins = ?, coins = ? WHERE username is ?", (wins, coins, username))
         else:
             cur.execute("INSERT INTO players (username, wins, coins) VALUES (?, ?, ?)", (username, wins, coins))
 
@@ -49,11 +71,19 @@ def update_coins(username, coins_new):
         cur = conn.cursor() 
         cur.execute("UPDATE players SET coins = ? WHERE username is ?", ([ coins_new, username]))
 
+def update_wins(username, wins_new):
+    conn = sqlite3.connect(DB)
+    with conn:
+        cur = conn.cursor() 
+        cur.execute("UPDATE players SET wins = ? WHERE username is ?", ([wins_new, username]))
+
+
 def update_assortiment(product_name, value):
     conn = sqlite3.connect(DB_S)
     with conn:
         cur = conn.cursor() 
         cur.execute("UPDATE products SET product_count = ? WHERE product_name is ?", ([value, product_name]))
+
 
 def shop_assortiment():
     conn = sqlite3.connect(DB_S)
@@ -97,6 +127,7 @@ def show_assortiment():
 
         return  product_names
     
+
 def show_prices():
     conn = sqlite3.connect(DB_S)
     with conn:
@@ -109,6 +140,7 @@ def show_prices():
 
         return  product_prices
     
+    
 def show_count():
     conn = sqlite3.connect(DB_S)
     with conn:
@@ -120,6 +152,7 @@ def show_count():
             product_count.append(row)
 
         return  product_count
+
 
 def show_profile(username):
     conn = sqlite3.connect(DB)
@@ -134,8 +167,11 @@ def show_profile(username):
     
 
 if __name__ == "__main__":
-    #add_coins_wins("test", "0", "5")
+    update_coins("dark_lord_plagas", "100")
+    update_wins("kotterminator", "0")
+    #add_user("dark_lord_plagas", 'admin')
+    #add_user("kotterminator", 'admin')
     #shop_assortiment()
-    show_assortiment()
+    #show_assortiment()
     #print(update_coins("test", "5"))
     #print(show_profile("test"))
