@@ -593,109 +593,111 @@ def timer_thread():
     global left_door_statement
     global right_door_statement
     global ventilation_statement
-    if game_started != True:
-        print("Game not started")
-    else:
-        while True:
-            time.sleep(1)
-            timer -= 1
-            if timer == 0:
-                end = True
-                break
-    
-            if right_door_timer > 0:
-                if right_door_statement == False:
-                        right_door_timer -= 1
-    
-            else:
-                right_door_statement = True
-    
-            if left_door_timer > 0:
-                if left_door_statement == False:
-                    left_door_timer -= 1
-            
-            else:
-                left_door_statement = True
-    
-            
-            if vent_timer > 0:
-                if ventilation_statement == False:
-                    vent_timer -= 1
-            
-            else:
-                ventilation_statement = True
-            if end or end_bad == True:
-                break
+    while True:
+        if game_started != True:
+            print("Game not started")
+        else:
+            while True:
+                time.sleep(1)
+                timer -= 1
+                if timer == 0:
+                    end = True
+                    break
+        
+                if right_door_timer > 0:
+                    if right_door_statement == False:
+                            right_door_timer -= 1
+        
+                else:
+                    right_door_statement = True
+        
+                if left_door_timer > 0:
+                    if left_door_statement == False:
+                        left_door_timer -= 1
+                
+                else:
+                    left_door_statement = True
+        
+                
+                if vent_timer > 0:
+                    if ventilation_statement == False:
+                        vent_timer -= 1
+                
+                else:
+                    ventilation_statement = True
+                if end or end_bad == True:
+                    break
 
 def timing_thread():
     global timer, go_cleaner, go_hoverboard, go_сrazy, go_cyborg, go_vodka, go_barmen, night, game_started, end, end_bad
     go_cleaner = False
-    if game_started != True:
-        print("Game not started")
-    else:
-        while True:
-            if night == 1:
-                if timer >= 541: #Рандом до 1 часа ночи(в игре) пойдет ли уборщик или нет(шанс очень маленький)
-                    time.sleep(5)
-                    a = randint(1, 100)
-                    if a == 50:
-                        go_cleaner = True
-                        print(go_cleaner)
-                    else: 
-                        print(timer)
-    
-                elif timer <= 540 and timer > 450: #Рандом пойдет ли уборщик в час ночи.
-                    time.sleep(5)
-                    a = randint(1, 5)
-                    if a == 2 or a == 3:
-                        go_cleaner = True
-                        print(go_cleaner)
-                    else:
-                        print('z')
+    while True:
+        if game_started != True:
+            print("Game not started")
+        else:
+            while True:
+                if night == 1:
+                    if timer >= 541: #Рандом до 1 часа ночи(в игре) пойдет ли уборщик или нет(шанс очень маленький)
                         time.sleep(5)
-                        go_cleaner = False
-                        print(timer)
-    
-                elif timer <= 450 and timer > 360: #Мне дальше лень писать комментарии так что все остальное это тоже рандом на уборщика первой ночью.
-                    time.sleep(5)
-                    a = randint(1, 5)
-                    if a == 2 or 3:
-                        go_cleaner = True
-                    else:
+                        a = randint(1, 100)
+                        if a == 50:
+                            go_cleaner = True
+                            print(go_cleaner)
+                        else: 
+                            print(timer)
+        
+                    elif timer <= 540 and timer > 450: #Рандом пойдет ли уборщик в час ночи.
                         time.sleep(5)
-                        a = randint(1,4)
+                        a = randint(1, 5)
                         if a == 2 or a == 3:
-                            go_cleaner == True
+                            go_cleaner = True
                             print(go_cleaner)
                         else:
                             print('z')
+                            time.sleep(5)
                             go_cleaner = False
                             print(timer)
-    
-                elif timer <= 360 and timer > 80:
-                    time.sleep(5)
-                    a = randint(1, 5)
-                    if a == 2 or a == 3:
-                        go_cleaner = True
-                        print(go_cleaner)
-                    else:
-                        print('z')
+        
+                    elif timer <= 450 and timer > 360: #Мне дальше лень писать комментарии так что все остальное это тоже рандом на уборщика первой ночью.
                         time.sleep(5)
-                        go_cleaner = True
-                        print(timer)
-    
-                elif timer <= 80:
-                    time.sleep(5)
-                    a = randint(1, 4)
-                    if a == 2 or a == 3 or a == 4:
-                        go_cleaner = True
-                    else:
-                        print('z')
+                        a = randint(1, 5)
+                        if a == 2 or 3:
+                            go_cleaner = True
+                        else:
+                            time.sleep(5)
+                            a = randint(1,4)
+                            if a == 2 or a == 3:
+                                go_cleaner == True
+                                print(go_cleaner)
+                            else:
+                                print('z')
+                                go_cleaner = False
+                                print(timer)
+        
+                    elif timer <= 360 and timer > 80:
                         time.sleep(5)
-                        go_cleaner = False
-                        print(timer)
-                elif end or end_bad == True:
-                    break
+                        a = randint(1, 5)
+                        if a == 2 or a == 3:
+                            go_cleaner = True
+                            print(go_cleaner)
+                        else:
+                            print('z')
+                            time.sleep(5)
+                            go_cleaner = True
+                            print(timer)
+        
+                    elif timer <= 80:
+                        time.sleep(5)
+                        a = randint(1, 4)
+                        if a == 2 or a == 3 or a == 4:
+                            go_cleaner = True
+                        else:
+                            print('z')
+                            time.sleep(5)
+                            go_cleaner = False
+                            print(timer)
+                    elif end or end_bad == True:
+                        break
 
 if __name__ == '__main__':
     db_manager.update_coins("test", '100')
