@@ -585,7 +585,7 @@ def bot_thread():
 
 def timer_thread():
     #Заметил ошибку из-за которой таймер не шел, починил.
-    global end
+    global end, end_bad
     global timer
     global vent_timer
     global right_door_timer
@@ -593,35 +593,39 @@ def timer_thread():
     global left_door_statement
     global right_door_statement
     global ventilation_statement
-
-    while True:
-        time.sleep(1)
-        timer -= 1
-        if timer == 0:
-            end = True
-            break
-
-        if right_door_timer > 0:
-            if right_door_statement == False:
-                    right_door_timer -= 1
-
-        else:
-            right_door_statement = True
-
-        if left_door_timer > 0:
-            if left_door_statement == False:
-                left_door_timer -= 1
-        
-        else:
-            left_door_statement = True
-
-        
-        if vent_timer > 0:
-            if ventilation_statement == False:
-                vent_timer -= 1
-        
-        else:
-            ventilation_statement = True
+    if game_started != True:
+        print("Game not started")
+    else:
+        while True:
+            time.sleep(1)
+            timer -= 1
+            if timer == 0:
+                end = True
+                break
+    
+            if right_door_timer > 0:
+                if right_door_statement == False:
+                        right_door_timer -= 1
+    
+            else:
+                right_door_statement = True
+    
+            if left_door_timer > 0:
+                if left_door_statement == False:
+                    left_door_timer -= 1
+            
+            else:
+                left_door_statement = True
+    
+            
+            if vent_timer > 0:
+                if ventilation_statement == False:
+                    vent_timer -= 1
+            
+            else:
+                ventilation_statement = True
+            if end or end_bad == True:
+                break
 
 def timing_thread():
     global timer, go_cleaner, go_hoverboard, go_сrazy, go_cyborg, go_vodka, go_barmen, night, game_started, end, end_bad
