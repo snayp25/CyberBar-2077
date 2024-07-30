@@ -22,9 +22,13 @@ cleaner_guest = False
 cleaner_vent = False 
 cleaner_storage = True #Эти переменные отвечают за уборщика(cleaner_go за то пойдет он или нет а остально за то в какой комнате он)
 go_сrazy = False #А эта за психа.
+crazy_door_right = False
+crazy_door_left = False
+crazy_vine = False
+crazy_guest = True
+crazy_vent = False 
+crazy_storage = False #Эти переменные отвечают за уборщика(cleaner_go за то пойдет он или нет а остально за то в какой комнате он)
 go_hoverboard = False #За ховерборд
-go_cyborg = False #КИБОРГ УБЫЙЦА
-go_vodka = False #А эта переменная за алкоголика отвечает.
 go_barmen = False #Ну и бармен
 go_terminator = False #Терминатор, тссс🤫
 left_door_statement = True #Булевая переменная, отвечающая за состояние левой двери
@@ -74,9 +78,11 @@ def win(message):
     global end
     global timer
     global game_started
+    global night
     end  = True
     timer = 0 
     game_started  = False
+    night += 1
     markup = types.InlineKeyboardMarkup(row_width=2)
     item1 = types.InlineKeyboardButton('Играть дальше', callback_data='button_game')
     item2 = types.InlineKeyboardButton('Профиль', callback_data='button_profile')
@@ -125,7 +131,14 @@ def callback(call):
     global hour
     global cleaner_vent
     global timer
-
+    global go_сrazy 
+    global crazy_door_right 
+    global crazy_door_left 
+    global crazy_vine 
+    global crazy_guest 
+    global crazy_vent 
+    global night
+    global go_сrazy
 
     if call.message:
 
@@ -141,9 +154,11 @@ def callback(call):
                 item4 = types.InlineKeyboardButton('Правая дверь🚪', callback_data='button_right_door')
                 item5 = types.InlineKeyboardButton('Магазин🏬', callback_data='button_shop')
                 markup.add(item1, item2, item3, item4, item5)
-                bot.send_photo(call.message.chat.id, open('./Images/Game/security_room.jpeg', 'rb'))
-                bot.send_message(call.message.chat.id, 'Вы устроились охранником в баре где недавно появились ИИ роботы, интересно, почему после появления роботов у них появился такой спрос на охрану?\nВаша задача, охранять бар до 6 утра(бар открывается в это время), вы можете смотреть камеры и закрывать двери, вы работаете 7 ночей, а потом вас заменит на время другой охранник, удачи!', reply_markup=markup)
-                time.sleep(10)
+                if night == 1:
+                    bot.send_photo(call.message.chat.id, open('./Images/Game/security_room.jpeg', 'rb'))
+                    bot.send_message(call.message.chat.id, 'Вы устроились охранником в баре где недавно появились ИИ роботы, интересно, почему после появления роботов у них появился такой спрос на охрану?\nВаша задача, охранять бар до 6 утра(бар открывается в это время), вы можете смотреть камеры и закрывать двери, вы работаете 7 ночей, а потом вас заменит на время другой охранник, удачи!', reply_markup=markup)
+                else:
+                    bot.send_photo(call.message.chat.id, open('./Images/Game/security_room.jpeg', 'rb'), reply_markup=markup)
                 game_started = True
                 timer = 630 
                 end = False
@@ -229,15 +244,20 @@ def callback(call):
             #Камера в каморке уборщика (Эта камера больше остальных разряжает планшет. Я сдлеал это чисто для тестировки :))) )
             elif call.data == "button_camera1":
 
-                battery_timer -= 50 
+                battery_timer -= 5
                 markup = types.InlineKeyboardMarkup(row_width=1)
                 item1 = types.InlineKeyboardButton('Назад->', callback_data='button_camera')
                 markup.add(item1)
-
-                if cleaner_storage == True:
-                    bot.send_photo(call.message.chat.id, open('./Images/Game/storage_cleaner.png', 'rb'))
-                else:
-                    bot.send_photo(call.message.chat.id, open('./Images/Game/storage.jpeg', 'rb'))
+                if night ==  1:
+                    if cleaner_storage == True:
+                        bot.send_photo(call.message.chat.id, open('./Images/Game/storage_cleaner.png', 'rb'))
+                    else:
+                        bot.send_photo(call.message.chat.id, open('./Images/Game/storage.jpeg', 'rb'))
+                elif night == 2:
+                    if crazy_storage == True:
+                        bot.send_photo(call.message.chat.id, open('./Images/Game/storage_crazy.jpg', 'rb'))
+                    else:
+                        bot.send_photo(call.message.chat.id, open('./Images/Game/storage.jpeg', 'rb'))
 
                 bot.send_message(call.message.chat.id, 'Каморка уборщика', reply_markup=markup)
 
@@ -248,12 +268,16 @@ def callback(call):
                 markup = types.InlineKeyboardMarkup(row_width=1)
                 item1 = types.InlineKeyboardButton('Назад->', callback_data='button_camera')
                 markup.add(item1)
-
-                if cleaner_vine == True:
-                    bot.send_photo(call.message.chat.id, open('./Images/Game/vine_cleaner.png', 'rb'))
-                else:
-                    bot.send_photo(call.message.chat.id, open('./Images/Game/vine_room.png', 'rb'))
-
+                if night == 1:
+                    if cleaner_vine == True:
+                        bot.send_photo(call.message.chat.id, open('./Images/Game/vine_cleaner.png', 'rb'))
+                    else:
+                        bot.send_photo(call.message.chat.id, open('./Images/Game/vine_room.png', 'rb'))
+                elif  night == 2:
+                    if crazy_vine == True:
+                        bot.send_photo(call.message.chat.id, open('./Images/Game/vine_room_crazy.jpg', 'rb'))
+                    else:
+                        bot.send_photo(call.message.chat.id, open('./Images/Game/vine_room.png', 'rb'))
                 bot.send_message(call.message.chat.id, 'Бар', reply_markup=markup)
 
             #Камера в комнате гостей
@@ -264,10 +288,17 @@ def callback(call):
                 item1 = types.InlineKeyboardButton('Назад->', callback_data='button_camera')
                 markup.add(item1)
 
-                if cleaner_guest == True:
-                    bot.send_photo(call.message.chat.id, open('./Images/Game/guest_room_cleaner.jpg', 'rb'))
-                else:
-                    bot.send_photo(call.message.chat.id, open('./Images/Game/guest_room.jpeg', 'rb'))
+                if night == 1:
+                    if cleaner_guest == True:
+                        bot.send_photo(call.message.chat.id, open('./Images/Game/guest_room_cleaner.jpg', 'rb'))
+                    else:
+                        bot.send_photo(call.message.chat.id, open('./Images/Game/guest_room.jpeg', 'rb'))
+
+                elif night == 2:
+                    if crazy_guest == True:
+                        bot.send_photo(call.message.chat.id, open('./Images/Game/guest_room_crazy.jpg', 'rb'))
+                    else:
+                        bot.send_photo(call.message.chat.id, open('./Images/Game/guest_room.jpeg', 'rb'))
 
                 bot.send_message(call.message.chat.id, 'Комната для гостей', reply_markup=markup)
             
@@ -282,12 +313,16 @@ def callback(call):
 
                     item1 = types.InlineKeyboardButton('Закрыть', callback_data='change_ventilation_statement')   
                     markup.add(item1, item2)
-
-                    if cleaner_vent == True:
-                        bot.send_photo(call.message.chat.id, open('./Images/Game/ventilation_cleaner.jpg', 'rb'))
-                    else:
-                        bot.send_photo(call.message.chat.id, open('./Images/Game/ventilation.jpg', 'rb'))
-
+                    if night == 1:
+                        if cleaner_vent == True:
+                            bot.send_photo(call.message.chat.id, open('./Images/Game/ventilation_cleaner.jpg', 'rb'))
+                        else:
+                            bot.send_photo(call.message.chat.id, open('./Images/Game/ventilation.jpg', 'rb'))
+                    elif night == 2:
+                        if crazy_vent == True:
+                            bot.send_photo(call.message.chat.id, open('./Images/Game/ventilation_crazy.jpg', 'rb'))
+                        else:
+                            bot.send_photo(call.message.chat.id, open('./Images/Game/ventilation.jpg', 'rb'))
                     bot.send_message(call.message.chat.id, 'Вентиляция открыта.', reply_markup=markup)
 
                 else: #Вентиляция закрыта
@@ -331,11 +366,16 @@ def callback(call):
 
                     item1 = types.InlineKeyboardButton('Закрыть', callback_data='change_left_door_statement')   
                     markup.add(item1, item2)
-
-                    if cleaner_door_left == True:
-                        bot.send_photo(call.message.chat.id, open('./Images/Game/left_door_cleaner.png', 'rb'))
-                    else:
-                        bot.send_photo(call.message.chat.id, open('./Images/Game/left_door_open.jpg', 'rb'))
+                    if night == 1:
+                        if cleaner_door_left == True:
+                            bot.send_photo(call.message.chat.id, open('./Images/Game/left_door_cleaner.png', 'rb'))
+                        else:
+                            bot.send_photo(call.message.chat.id, open('./Images/Game/left_door_open.jpg', 'rb'))
+                    elif night == 2:
+                        if crazy_door_left == True:
+                            bot.send_photo(call.message.chat.id, open('./Images/Game/left_door_crazy.jpg', 'rb'))
+                        else:
+                            bot.send_photo(call.message.chat.id, open('./Images/Game/left_door_open.jpg', 'rb'))
 
                     bot.send_message(call.message.chat.id, 'Дверь открыта.', reply_markup=markup)
 
@@ -359,12 +399,20 @@ def callback(call):
                     if left_door_statement: #Дверь открыта
                         item1 = types.InlineKeyboardButton('Закрыть', callback_data='change_left_door_statement')   
                         markup.add(item1, item2)
-                        if cleaner_door_left == True:
-                            left_door_timer = 100
-                            bot.send_photo(call.message.chat.id, open('./Images/Game/left_door_cleaner.png', 'rb'))
-                        else:
-                            left_door_timer = 100
-                            bot.send_photo(call.message.chat.id, open('./Images/Game/left_door_open.jpg', 'rb'))
+                        if night == 1:
+                            if cleaner_door_left == True:
+                                left_door_timer = 100
+                                bot.send_photo(call.message.chat.id, open('./Images/Game/left_door_cleaner.png', 'rb'))
+                            else:
+                                left_door_timer = 100
+                                bot.send_photo(call.message.chat.id, open('./Images/Game/left_door_open.jpg', 'rb'))
+                        elif night == 2:
+                            if crazy_door_left == True:
+                                left_door_timer = 100
+                                bot.send_photo(call.message.chat.id, open('./Images/Game/left_door_crazy.jpg', 'rb'))
+                            else:
+                                left_door_timer = 100
+                                bot.send_photo(call.message.chat.id, open('./Images/Game/left_door_open.jpg', 'rb'))
                         bot.send_message(call.message.chat.id, 'Дверь открыта.', reply_markup=markup)
                     else: #Дверь закрыта
                         item1 = types.InlineKeyboardButton('Открыть', callback_data='change_left_door_statement')   
@@ -385,10 +433,16 @@ def callback(call):
                 if right_door_statement: #Дверь открыта
                     item1 = types.InlineKeyboardButton('Закрыть', callback_data='change_right_door_statement')   
                     markup.add(item1, item2)
-                    if cleaner_door_right == True:
-                        bot.send_photo(call.message.chat.id, open('./Images/Game/right_door_cleaner.png', 'rb'))
-                    else:
-                        bot.send_photo(call.message.chat.id, open('./Images/Game/right_door_open.jpg', 'rb'))
+                    if night == 1:
+                        if cleaner_door_right == True:
+                            bot.send_photo(call.message.chat.id, open('./Images/Game/right_door_cleaner.png', 'rb'))
+                        else:
+                            bot.send_photo(call.message.chat.id, open('./Images/Game/right_door_open.jpg', 'rb'))
+                    elif night == 2:
+                        if crazy_door_right == True:
+                            bot.send_photo(call.message.chat.id, open('./Images/Game/right_door_crazy.jpg', 'rb'))
+                        else:
+                            bot.send_photo(call.message.chat.id, open('./Images/Game/right_door_open.jpg', 'rb'))
                     bot.send_message(call.message.chat.id, 'Дверь открыта.', reply_markup=markup)
                 else: #Дверь закрыта
                     item1 = types.InlineKeyboardButton('Открыть', callback_data='change_right_door_statement')   
@@ -406,10 +460,16 @@ def callback(call):
                     if right_door_statement: #Дверь открыта
                         item1 = types.InlineKeyboardButton('Закрыть', callback_data='change_right_door_statement')   
                         markup.add(item1, item2)
-                        if cleaner_door_right == True:
-                            bot.send_photo(call.message.chat.id, open('./Images/Game/right_door_cleaner.png', 'rb'))
-                        else:
-                            bot.send_photo(call.message.chat.id, open('./Images/Game/right_door_open.jpg', 'rb'))
+                        if night == 1:
+                            if cleaner_door_right == True:
+                                bot.send_photo(call.message.chat.id, open('./Images/Game/right_door_cleaner.png', 'rb'))
+                            else:
+                                bot.send_photo(call.message.chat.id, open('./Images/Game/right_door_open.jpg', 'rb'))
+                        elif night == 2:
+                            if crazy_door_right == True:
+                                bot.send_photo(call.message.chat.id, open('./Images/Game/right_door_crazy.jpg', 'rb'))
+                            else:
+                                bot.send_photo(call.message.chat.id, open('./Images/Game/right_door_open.jpg', 'rb'))
                         bot.send_message(call.message.chat.id, 'Дверь открыта.', reply_markup=markup)
                     else: #Дверь закрыта
                         right_door_timer = 100
@@ -434,10 +494,16 @@ def callback(call):
                 if ventilation_statement: #Вентиляци открыта
                     item1 = types.InlineKeyboardButton('Закрыть', callback_data='change_ventilation_statement')   
                     markup.add(item1, item2)
-                    if cleaner_vent == True:
-                        bot.send_photo(call.message.chat.id, open('./Images/Game/ventilation_cleaner.jpg', 'rb'))
-                    else:
-                        bot.send_photo(call.message.chat.id, open('./Images/Game/ventilation.jpg', 'rb'))
+                    if night == 1:
+                        if cleaner_vent == True:
+                            bot.send_photo(call.message.chat.id, open('./Images/Game/ventilation_cleaner.jpg', 'rb'))
+                        else:
+                            bot.send_photo(call.message.chat.id, open('./Images/Game/ventilation.jpg', 'rb'))
+                    elif night == 2:
+                        if crazy_vent == True:
+                            bot.send_photo(call.message.chat.id, open('./Images/Game/ventilation_crazy.jpg', 'rb'))
+                        else:
+                            bot.send_photo(call.message.chat.id, open('./Images/Game/ventilation.jpg', 'rb'))
                     bot.send_photo(call.message.chat.id, open('./Images/Game/ventilation.jpg', 'rb'))
                     bot.send_message(call.message.chat.id, 'Вентиляция открыта.', reply_markup=markup)
                 else: #вентиляция закрыта
@@ -604,7 +670,82 @@ def callback(call):
                             cleaner_vine = True
                             cleaner_vent = False
                             go_cleaner = False 
+                            return
+                         
+            if go_сrazy == True:
+                if cleaner_storage:
+                    b = randint(0, 11)
+                    ost = b%2
+                    if ost == 0: 
+                        cleaner_guest = True
+                        cleaner_storage = False
+                        go_сrazy = False
+                        return 
+                    else:
+                        cleaner_vine = True
+                        cleaner_storage = False
+                        go_сrazy = False 
+                        return 
+
+                else:
+
+                    if сrazy_guest:
+                        a = randint(0, 3)
+                        if a == 0:
+                            crazy_door_left = True
+                            сrazy_guest = False
+                            go_сrazy = False
                             return 
+                        else: 
+                            crazy_vine = True
+                            сrazy_guest = False
+                            go_сrazy = False 
+                            return 
+
+                    elif cleaner_vine:
+                        a = randint(0, 5)
+                        if a == 0:
+                            crazy_door_right = True
+                            crazy_vine = False
+                            go_сrazy = False
+                            return 
+                        
+                        elif a == 2:
+                            crazy_vent = True
+                            crazy_vine = False
+                            go_сrazy = False
+                            return
+                        
+                        else:
+                            сrazy_guest = True
+                            crazy_vine = False
+                            go_сrazy = False 
+                            return 
+
+                    elif cleaner_door_right:
+                        if right_door_statement == False:
+                            time.sleep(5)
+                            crazy_vine = True
+                            crazy_door_right = False
+                            go_сrazy = False 
+                            return 
+                    
+                    elif cleaner_door_left:
+                        if left_door_statement == False:
+                            time.sleep(5)
+                            сrazy_guest = True
+                            crazy_door_left  = False
+                            go_сrazy = False 
+                            return 
+
+                    elif cleaner_vent:
+                        if ventilation_statement == False:
+                            time.sleep(5)
+                            crazy_vine = True
+                            crazy_vent = False
+                            go_сrazy = False 
+                            return 
+                        
 
             if end == True:
                 username = call.message.from_user.username
@@ -612,6 +753,7 @@ def callback(call):
                 db_manager.add_coins_wins(username, "1", str(int(db_manager.show_coins("test"))+10))
                 timer = 0 
                 game_started  = False
+                night += 1
                 markup = types.InlineKeyboardMarkup(row_width=2)
                 item1 = types.InlineKeyboardButton('Играть дальше', callback_data='button_game')
                 item2 = types.InlineKeyboardButton('Профиль', callback_data='button_profile')
@@ -638,7 +780,7 @@ def callback(call):
                 else:
                     go_cleaner = True
 
-            elif cleaner_door_left == True and left_door_statement == True:
+            elif cleaner_door_left == True and left_door_statement == True :
                 time.sleep(5)
                 if left_door_statement != False:
                     timer = 0 
@@ -716,7 +858,7 @@ def timer_thread():
                 ventilation_statement = True
 
 def timing_thread():
-    global timer, go_cleaner, go_hoverboard, go_сrazy, go_cyborg, go_vodka, go_barmen, night
+    global timer, go_cleaner, go_hoverboard, go_сrazy, go_barmen, night
     while True:
         if game_started != True:
             None 
@@ -781,6 +923,70 @@ def timing_thread():
                         time.sleep(5)
                         go_cleaner = False
                         print(timer)
+
+
+            elif night == 2:
+                    if timer >= 541: #Рандом до 1 часа ночи(в игре) пойдет ли уборщик или нет(шанс очень маленький)
+                        time.sleep(5)
+                        a = randint(1, 100)
+                        if a == 50:
+                            go_crazy = True
+                            print(go_crazy)
+                        else: 
+                            print(timer)
+
+                    elif timer <= 540 and timer > 450: #Рандом пойдет ли уборщик в час ночи.
+                        time.sleep(5)
+                        a = randint(1, 5)
+                        if a == 2 or a == 3:
+                            go_crazy = True
+                            print(go_crazy)
+                        else:
+                            print('z')
+                            time.sleep(5)
+                            go_crazy = False
+                            print(timer)
+
+                    elif timer <= 450 and timer > 360: #Мне дальше лень писать комментарии так что все остальное это тоже рандом на уборщика первой ночью.
+                        time.sleep(5)
+                        a = randint(1, 5)
+                        if a == 2 or 3:
+                            go_crazy = True
+                        else:
+                            time.sleep(5)
+                            a = randint(1,4)
+                            if a == 2 or a == 3:
+                                go_crazy == True
+                                print(go_crazy)
+                            else:
+                                print('i')
+                                go_crazy = False
+                                print(timer)
+
+                    elif timer <= 360 and timer > 80:
+                        time.sleep(5)
+                        a = randint(1, 5)
+                        if a == 2 or a == 3:
+                            go_crazy = True
+                            print(go_crazy)
+                        else:
+                            print('f')
+                            time.sleep(5)
+                            go_crazy = False
+                            print(timer)
+
+                    elif timer <= 80:
+                        time.sleep(5)
+                        a = randint(1, 4)
+                        if a == 2 or a == 3 or a == 4:
+                            go_crazy = True
+                        else:
+                            print('m')
+                            time.sleep(5)
+                            go_crazy = False
+                            print(timer)
+
+
 
 
 if __name__ == '__main__':
