@@ -43,6 +43,7 @@ right_door_timer = 100
 left_door_timer = 100
 vent_timer = 80
 hour = 0
+admin_night = False
 
 
 @bot.message_handler(commands=["start"])
@@ -106,6 +107,23 @@ def win(message):
     bot.send_photo(message.chat.id, open('./Images/Game/loose.jpg', 'rb'))
     bot.send_message(message.chat.id, "Вы проиграли!", reply_markup=markup)
 
+@bot.message_handler(commands=["night"])
+def win(message):
+    global game_started
+    global timer
+    global admin_night
+    admin_night = True
+    timer = 0 
+    game_started  = False
+    markup = types.InlineKeyboardMarkup(row_width=2)
+    for i in range(1, 6):
+        s =  'button_game' + '|' + str(i)
+        item1 = types.InlineKeyboardButton(f'Ночь {i}', callback_data=s)
+        markup.add(item1)
+    #db_manager.add_coins_wins(message.from_user.username, "1", str(int(db_manager.show_coins(message.from_user.username))+10))
+    bot.send_photo(message.chat.id, open('./Images/Game/clocks.jpg', 'rb'))
+    bot.send_message(message.chat.id, "Выберите ночь:", reply_markup=markup)
+
 
 @bot.callback_query_handler(func=lambda call:True)
 def callback(call):
@@ -142,11 +160,11 @@ def callback(call):
 
     if call.message:
 
-        if call.data == 'button_game':
+        if call.data == 'button_game' or "button_game" in call.data:
             game_started = True
 
         if game_started:
-            if call.data == 'button_game':  
+            if call.data == 'button_game' or "button_game" in call.data:  
                 markup = types.InlineKeyboardMarkup(row_width=2)
                 item1 = types.InlineKeyboardButton('Камеры📸', callback_data='button_camera')
                 item2 = types.InlineKeyboardButton('Часы⏰', callback_data='button_clocks')
@@ -154,6 +172,9 @@ def callback(call):
                 item4 = types.InlineKeyboardButton('Правая дверь🚪', callback_data='button_right_door')
                 item5 = types.InlineKeyboardButton('Магазин🏬', callback_data='button_shop')
                 markup.add(item1, item2, item3, item4, item5)
+                if call.data != 'button_game':
+                    second_param = call.data.split('|')[1]
+                    night = int(second_param)
                 if night == 1:
                     bot.send_photo(call.message.chat.id, open('./Images/Game/security_room.jpeg', 'rb'))
                     bot.send_message(call.message.chat.id, 'Вы устроились охранником в баре где недавно появились ИИ роботы, интересно, почему после появления роботов у них появился такой спрос на охрану?\nВаша задача, охранять бар до 6 утра(бар открывается в это время), вы можете смотреть камеры и закрывать двери, вы работаете 7 ночей, а потом вас заменит на время другой охранник, удачи!', reply_markup=markup)
