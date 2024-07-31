@@ -153,7 +153,7 @@ def console(message):
     status = db_manager.check_status(message.from_user.username)
     if status == 'admin': #Проверяем статус игрока
 
-        bot.reply_to(message, "Комманды разработчика: \n /win - мгновенная победа \n  /kill - мгновенный проигрыш \n /night - выбор ночи \n /hour -выбор времени")
+        bot.reply_to(message, "Комманды разработчика: \n /win - мгновенная победа \n  /kill - мгновенный проигрыш \n /night - выбор ночи")
 
     else:
 
@@ -192,6 +192,8 @@ def win(message):
         markup.add(item1, item2)
 
         #db_manager.add_coins_wins(message.from_user.username, "1", str(int(db_manager.show_coins(message.from_user.username))+10))
+        db_manager.update_coins(message.from_user.username, str(int(db_manager.show_coins(message.from_user.username))+1))
+        db_manager.update_wins(message.from_user.username, str(int(db_manager.show_wins(message.from_user.username))+1))
         bot.send_photo(message.chat.id, open('./Images/Game/win.jpg', 'rb'))
         bot.send_message(message.chat.id, "Вы победили! (+10 монет)", reply_markup=markup)
 
@@ -224,6 +226,7 @@ def kill(message):
 
         bot.reply_to(message, "У вас нет прав использовать команды админа!")
 
+
 @bot.message_handler(commands=["night"]) #Выбор ночи (команда админа)
 def night_set(message):
 
@@ -240,7 +243,9 @@ def night_set(message):
 
         markup = types.InlineKeyboardMarkup(row_width=2)
         for i in range(1, 6):
+
             s =  'button_game' + '|' + str(i)
+
             item1 = types.InlineKeyboardButton(f'Ночь {i}', callback_data=s)
             markup.add(item1)
 
@@ -250,6 +255,7 @@ def night_set(message):
     else:
 
         bot.reply_to(message, "У вас нет прав использовать команды админа!")
+
 
 
 @bot.callback_query_handler(func=lambda call:True) #Обработка нажатий
@@ -533,6 +539,19 @@ def callback(call):
                         else:
 
                             bot.send_photo(call.message.chat.id, open('./Images/Game/left_door_open.jpg', 'rb'))
+                    
+                    elif night == 4:
+                        if hover_door_left == True:
+
+                            left_door_timer = 100
+
+                            bot.send_photo(call.message.chat.id, open('./Images/Game/left_door_hover.jpg', 'rb'))
+
+                        else:
+
+                            left_door_timer = 100
+
+                            bot.send_photo(call.message.chat.id, open('./Images/Game/left_door_open.jpg', 'rb'))
 
 
                     bot.send_message(call.message.chat.id, 'Дверь открыта.', reply_markup=markup)
@@ -585,9 +604,18 @@ def callback(call):
                         else:
 
                             bot.send_photo(call.message.chat.id, open('./Images/Game/right_door_open.jpg', 'rb'))
+                        
+                    elif night == 4:
+                        if hover_door_right == True:
 
-                    bot.send_message(call.message.chat.id, 'Дверь открыта.', reply_markup=markup)
-               
+                            bot.send_photo(call.message.chat.id, open('./Images/Game/right_door_hover.jpg', 'rb'))
+
+                        else:
+
+                            bot.send_photo(call.message.chat.id, open('./Images/Game/right_door_open.jpg', 'rb'))
+                        
+                    bot.send_message(call.message.chat.id, 'Дверь закрыта.', reply_markup=markup)
+                             
                 else: #Дверь закрыта
                     
                     item1 = types.InlineKeyboardButton('Открыть', callback_data='change_right_door_statement')   
@@ -647,6 +675,15 @@ def callback(call):
 
                         bot.send_photo(call.message.chat.id, open('./Images/Game/storage.jpeg', 'rb'))
 
+                elif night == 4:
+                    if hover_storage == True:
+
+                        bot.send_photo(call.message.chat.id, open('./Images/Game/storage_hover.jpg', 'rb'))
+
+                    else:
+
+                        bot.send_photo(call.message.chat.id, open('./Images/Game/storage.jpeg', 'rb'))
+
                 bot.send_message(call.message.chat.id, 'Каморка уборщика', reply_markup=markup)
 
 
@@ -679,6 +716,15 @@ def callback(call):
                     if barmen_vine == True:
 
                         bot.send_photo(call.message.chat.id, open('./Images/Game/vine_room_barmen.jpg', 'rb'))
+
+                    else:
+
+                        bot.send_photo(call.message.chat.id, open('./Images/Game/vine_room.png', 'rb'))
+
+                elif  night == 4:
+                    if hover_vine == True:
+
+                        bot.send_photo(call.message.chat.id, open('./Images/Game/vine_room_hover.jpg', 'rb'))
 
                     else:
 
@@ -721,6 +767,15 @@ def callback(call):
 
                         bot.send_photo(call.message.chat.id, open('./Images/Game/guest_room.jpeg', 'rb'))
 
+                elif night == 4:
+                    if hover_guest == True:
+
+                        bot.send_photo(call.message.chat.id, open('./Images/Game/guest_room_hover.jpg', 'rb'))
+
+                    else:
+
+                        bot.send_photo(call.message.chat.id, open('./Images/Game/guest_room.jpeg', 'rb'))
+
 
                 bot.send_message(call.message.chat.id, 'Комната для гостей', reply_markup=markup)
             
@@ -758,6 +813,15 @@ def callback(call):
                         if barmen_vent == True:
 
                             bot.send_photo(call.message.chat.id, open('./Images/Game/ventilation_barmen.jpg', 'rb'))
+
+                        else:
+
+                            bot.send_photo(call.message.chat.id, open('./Images/Game/ventilation.jpg', 'rb'))
+                    
+                    elif night == 4: #Третья ночь (бармен)
+                        if hover_vent == True: #Проверяем, есть ли бармен в вентиляции
+
+                            bot.send_photo(call.message.chat.id, open('./Images/Game/ventilation_hover.jpg', 'rb'))
 
                         else:
 
@@ -810,6 +874,15 @@ def callback(call):
                         if barmen_vent == True: #Проверяем, есть ли бармен в вентиляции
 
                             bot.send_photo(call.message.chat.id, open('./Images/Game/ventilation_barmen.jpg', 'rb'))
+
+                        else:
+
+                            bot.send_photo(call.message.chat.id, open('./Images/Game/ventilation.jpg', 'rb'))
+                    
+                    elif night == 4: #Третья ночь (бармен)
+                        if hover_vent == True: #Проверяем, есть ли бармен в вентиляции
+
+                            bot.send_photo(call.message.chat.id, open('./Images/Game/ventilation_hover.jpg', 'rb'))
 
                         else:
 
@@ -896,6 +969,19 @@ def callback(call):
                                 left_door_timer = 100
 
                                 bot.send_photo(call.message.chat.id, open('./Images/Game/left_door_open.jpg', 'rb'))
+                        
+                        elif night == 4:
+                            if hover_door_left == True:
+
+                                left_door_timer = 100
+
+                                bot.send_photo(call.message.chat.id, open('./Images/Game/left_door_hover.jpg', 'rb'))
+
+                            else:
+
+                                left_door_timer = 100
+
+                                bot.send_photo(call.message.chat.id, open('./Images/Game/left_door_open.jpg', 'rb'))
 
                         bot.send_message(call.message.chat.id, 'Дверь открыта.', reply_markup=markup)
                     
@@ -955,6 +1041,15 @@ def callback(call):
 
                                 bot.send_photo(call.message.chat.id, open('./Images/Game/right_door_open.jpg', 'rb'))
                         
+                        elif night == 4:
+                            if hover_door_right == True:
+
+                                bot.send_photo(call.message.chat.id, open('./Images/Game/right_door_hover.jpg', 'rb'))
+
+                            else:
+
+                                bot.send_photo(call.message.chat.id, open('./Images/Game/right_door_open.jpg', 'rb'))
+                         
                         bot.send_message(call.message.chat.id, 'Дверь открыта.', reply_markup=markup)
 
                     else: #Дверь закрыта
@@ -1399,6 +1494,112 @@ def callback(call):
                             go_barmen = False 
 
                             return                         
+           
+
+            if go_hoverboard == True: #Ховерборд
+                if hover_storage:
+
+                    b = randint(0, 11)
+                    ost = b%2
+
+                    if ost == 0: 
+
+                        hover_guest = True
+                        hover_storage = False
+                        go_hoverboard = False
+
+                        return 
+                    
+                    else:
+
+                        hover_vine = True
+                        hover_storage = False
+                        go_hoverboard = False 
+
+                        return 
+
+                else:
+
+                    if hover_guest:
+
+                        a = randint(0, 3)
+
+                        if a == 0:
+
+                            hover_door_left = True
+                            hover_guest = False
+                            go_hoverboard = False
+
+                            return 
+                        
+                        else: 
+
+                            hover_vine = True
+                            hover_guest = False
+                            go_hoverboard = False
+
+                            return 
+
+                    elif hover_vine:
+
+                        a = randint(0, 5)
+
+                        if a == 0:
+
+                            hover_door_right = True
+                            hover_vine = False
+                            go_hoverboard = False
+
+                            return 
+                        
+                        elif a == 2:
+
+                            hover_vent = True
+                            hover_vine = False
+                            go_hoverboard = False
+
+                            return
+                        
+                        else:
+
+                            hover_guest = True
+                            hover_vine = False
+                            go_hoverboard = False 
+
+                            return 
+
+                    elif hover_door_right:
+                        if right_door_statement == False:
+
+                            time.sleep(5)
+
+                            hover_vine = True
+                            hover_door_right = False
+                            go_hoverboard = False 
+
+                            return 
+                    
+                    elif hover_door_left:
+                        if left_door_statement == False:
+
+                            time.sleep(5)
+
+                            hover_guest = True
+                            hover_door_left = False
+                            go_hoverboard = False 
+
+                            return 
+
+                    elif barmen_vent:
+                        if ventilation_statement == False:
+
+                            time.sleep(5)
+
+                            hover_vine = True
+                            hover_vent = False
+                            go_hoverboard = False 
+
+                            return                         
 
 
 
@@ -1495,6 +1696,11 @@ def callback(call):
 
 
 
+#Функции и механики
+
+
+
+
 def bot_thread(): #Постоянная работа бота
 
     bot.infinity_polling(print("Bot started."), none_stop=True)
@@ -1573,9 +1779,11 @@ def timing_thread(): #Механика передвижения роботов
 
         else:
 
-            #Ночь 1 (Уборщик)
 
-            if night == 1:
+            if night == 1:  #Ночь 1 (Уборщик)
+                go_barmen = False
+                go_crazy = False
+                go_hoverboard = False
                 if timer >= 541: #Рандом до 1 часа ночи(в игре) пойдет ли уборщик или нет(шанс очень маленький)
 
                     time.sleep(5)
@@ -1665,10 +1873,11 @@ def timing_thread(): #Механика передвижения роботов
                         go_cleaner = False
                         print(timer)
 
-            #Ночь 2 (Псих)
 
-            elif night == 2:
-                    
+            elif night == 2: #Ночь 2 (Псих)
+                    go_barmen = False
+                    go_cleaner = False
+                    go_hoverboard = False
                     if timer >= 541: #Рандом до 1 часа ночи(в игре) пойдет ли псих или нет(шанс очень маленький)
                         
                         time.sleep(5)
@@ -1758,10 +1967,11 @@ def timing_thread(): #Механика передвижения роботов
                             go_crazy = False
                             print(timer)
 
-            #Ночь 3 (Бармен)
 
-            elif night == 3:
-                    
+            elif night == 3: #Ночь 3 (Бармен)
+                    go_crazy = False
+                    go_cleaner = False
+                    go_hoverboard = False
                     if timer >= 541: #Рандом до 1 часа ночи(в игре) пойдет ли бармен или нет(шанс очень маленький)
                         
                         time.sleep(5)
@@ -1851,10 +2061,11 @@ def timing_thread(): #Механика передвижения роботов
                             go_barmen = False
                             print(timer)
 
-            #Ночь 4 (Ховерборд)
 
-            elif night  == 4:
-
+            elif night  == 4: #Ночь 4 (Ховерборд)
+                    go_crazy = False
+                    go_cleaner = False
+                    go_barmen = False
                     if timer >= 541: #Рандом до 1 часа ночи(в игре) пойдет ли бармен или нет(шанс очень маленький)
                             
                             time.sleep(5)
@@ -1862,7 +2073,7 @@ def timing_thread(): #Механика передвижения роботов
                             
                             if a == 50:
                                 
-                                go_barmen = True
+                                go_hoverboard = True
                                 print(go_hoverboard) #Нужно для тестирования
 
                             else: 
@@ -1945,6 +2156,7 @@ def timing_thread(): #Механика передвижения роботов
                             time.sleep(5)
                             go_hoverboard = False
                             print(timer) #Нужно для тестирования
+
 
 
 
