@@ -117,6 +117,9 @@ vent_timer = 80
 
 
 
+#Общедоступные команды
+
+
 @bot.message_handler(commands=["start"]) #Запуск бота
 def start(message):
 
@@ -147,14 +150,18 @@ def console(message):
 @bot.message_handler(commands=["menu"]) #Меню
 def menu(message):
 
-    markup = types.InlineKeyboardMarkup(row_width=1)
+    markup = types.InlineKeyboardMarkup(row_width=2)
     item1 = types.InlineKeyboardButton('Играть', callback_data='button_game')
     item2 = types.InlineKeyboardButton('Профиль', callback_data='button_profile')
     markup.add(item1,item2)
 
     bot.send_message(message.chat.id, 'Вот меню:', reply_markup=markup)
 
-@bot.message_handler(commands=["win"]) #Мгновенная победа (команда админа)
+
+#Команды админа
+
+
+@bot.message_handler(commands=["win"]) #Мгновенная победа 
 def win(message):
 
     global end
@@ -187,7 +194,7 @@ def win(message):
         bot.reply_to(message, "У вас нет прав использовать команды админа!")
 
 
-@bot.message_handler(commands=["kill"]) #Мгновенная смерть (команда админа)
+@bot.message_handler(commands=["kill"]) #Мгновенная смерть 
 def kill(message):
 
     global game_started
@@ -212,7 +219,7 @@ def kill(message):
         bot.reply_to(message, "У вас нет прав использовать команды админа!")
 
 
-@bot.message_handler(commands=["night"]) #Выбор ночи (команда админа)
+@bot.message_handler(commands=["night"]) #Выбор ночи 
 def night_set(message):
 
     global game_started
@@ -240,6 +247,8 @@ def night_set(message):
     else:
 
         bot.reply_to(message, "У вас нет прав использовать команды админа!")
+
+
 
 
 
@@ -330,6 +339,36 @@ def callback(call):
 
     if call.message: #Обработка нажатий
 
+
+
+        #Кнопки до основного геймплея
+
+
+
+        if call.data == 'button_profile': #Профиль игрока
+
+                markup = types.InlineKeyboardMarkup(row_width=5)
+                item1 = types.InlineKeyboardButton('Назад->', callback_data='back1')
+                markup.add(item1)
+                username = call.from_user.username
+                profile = db_manager.show_profile(username)
+                bot.send_message(call.message.chat.id, f'Ваш профиль: \n Имя {profile[0]} \n Победы {profile[1]} \n Деньги {profile[2]} \n Статусы {profile[3]}', reply_markup=markup)
+
+        elif call.data == "back1": #Возвращение, если игрок ещё не начал игру
+
+                markup = types.InlineKeyboardMarkup(row_width=2)
+                item1 = types.InlineKeyboardButton('Играть', callback_data='button_game')
+                item2 = types.InlineKeyboardButton('Профиль', callback_data='button_profile')
+                markup.add(item1,item2)
+
+                bot.send_message(call.message.chat.id, 'Меню:', reply_markup=markup)
+
+
+
+        #Основной геймплей
+
+        
+
         if call.data == 'button_game' or "button_game" in call.data: #Проверяем, нажали ли кнопку "Играть"
 
             game_started = True
@@ -342,18 +381,10 @@ def callback(call):
 
 
 
-            if call.data == 'button_profile': #Профиль игрока
-
-                markup = types.InlineKeyboardMarkup(row_width=5)
-                item1 = types.InlineKeyboardButton('Назад->', callback_data='back1')
-                username = call.message.from_user.username
-                profile = db_manager.show_profile(username)
-                bot.send_message(call.message.chat.id, f'Ваш профиль:(первое это имя, второе это победы, а третье это деньги.) {profile}', reply_markup=markup)
-            
 
             if call.data == 'button_game' or "button_game" in call.data:  #Переход в игру
-                polling_timings.start()
-                polling_timer.start()
+                #polling_timings.start()
+                #polling_timer.start()
                 markup = types.InlineKeyboardMarkup(row_width=2)
                 item1 = types.InlineKeyboardButton('Камеры📸', callback_data='button_camera')
                 item2 = types.InlineKeyboardButton('Часы⏰', callback_data='button_clocks')
@@ -663,6 +694,7 @@ def callback(call):
                     else:
 
                         bot.send_photo(call.message.chat.id, open('./Images/Game/storage.jpeg', 'rb'))
+                
                 elif night == 5:
                     bot.send_photo(call.message.chat.id, open('./Images/Game/broken_kamera.jpg', 'rb'))
 
@@ -1167,16 +1199,6 @@ def callback(call):
                 bot.send_photo(call.message.chat.id, open('./Images/Game/security_room.jpeg', 'rb'), reply_markup=markup)
 
 
-            elif call.data == "back1": #Возвращение, если игрок ещё не начал игру
-
-                markup = types.InlineKeyboardMarkup(row_width=1)
-                item1 = types.InlineKeyboardButton('Играть', callback_data='button_game')
-                item2 = types.InlineKeyboardButton('Профиль', callback_data='button_profile')
-                markup.add(item1,item2)
-
-                bot.send_message(call.message.chat.id, 'Меню:', reply_markup=markup)
-
-
 
             #Логика передвижения роботов
 
@@ -1604,6 +1626,7 @@ def callback(call):
                             go_hoverboard = False 
 
                             return                         
+
 
             if go_terminator == True: #ТЕРМИНАТОР
                 if terminator_fifth_room == True:
@@ -2504,4 +2527,3 @@ if __name__ == '__main__': #Если данный файл запущен
 
 
     polling_thread.start()
-
