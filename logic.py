@@ -85,8 +85,8 @@ def add_user(username, wins, coins, status): #Добавление пользо�
             
         if username in names: #Проверяем, есть ли такой пользователь
 
-            print("Такой пользователь уже существует!")
-
+            cur.execute("UPDATE players SET wins = ?,  coins = ? WHERE username = ?", (wins, coins, username))
+                        
         else:
 
             cur.execute("INSERT INTO players (username, wins, coins,  status) VALUES (?, ?, ?, ?)", (username, wins, coins, status))
@@ -159,13 +159,14 @@ def show_profile(username): #Отображение профиля
         cur = conn.cursor()
         result = cur.execute("SELECT * FROM players WHERE username is ?", ([username]))
 
-        profile = ""
+        profile = []
 
         for row in result:
 
-            profile += " ".join(row)
+            profile.append(row)
             
-        return profile
+    
+        return profile[0]
 
 
 def update_coins(username, coins_new): #Обновление количества монет
@@ -307,5 +308,6 @@ def update_assortiment(product_name, value): #Обновление ассорт�
 
 
 if __name__ == "__main__": #Если файл запущен
-    update_wins('dark_lord_plagas', '0')
-    show_coins('dark_lord_plagas')
+    #update_wins('dark_lord_plagas', '0')
+    #show_coins('dark_lord_plagas')
+    show_profile('dark_lord_plagas')
