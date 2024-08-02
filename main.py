@@ -1,12 +1,18 @@
 #Импорты
 
+
+
 from random import *
 from config import *
 from telebot import *
 import logic as db_manager
-import time, threading, art
+import time, threading
+
+
 
 #Cоздание переменных
+
+
 
 #Создание бота
 
@@ -161,6 +167,7 @@ def menu(message):
     else:
         markup.add(item1,item2)
 
+    bot.send_photo(message.chat.id, open('./Images/Game/menu.jpeg', 'rb'))
     bot.send_message(message.chat.id, 'Вот меню:', reply_markup=markup)
 
 
@@ -185,21 +192,29 @@ def win(message):
 
         markup = types.InlineKeyboardMarkup(row_width=2)
 
-        if night != 5:
+        if night >= 5:
 
-            item1 = types.InlineKeyboardButton('Играть дальше', callback_data='button_game')
+            item1 = types.InlineKeyboardButton('Меню', callback_data='back1')
 
         else: 
 
-            item1 = types.InlineKeyboardButton('Меню', callback_data='back1')
+            item1 = types.InlineKeyboardButton('Играть дальше', callback_data='button_game')
 
         item2 = types.InlineKeyboardButton('Профиль', callback_data='button_profile')
         markup.add(item1, item2)
 
-        db_manager.update_coins(message.from_user.username, str(int(db_manager.show_coins(message.from_user.username))+1))
+        db_manager.update_coins(message.from_user.username, str(int(db_manager.show_coins(message.from_user.username))+3))
         db_manager.update_wins(message.from_user.username, str(int(db_manager.show_wins(message.from_user.username))+1))
+
         bot.send_photo(message.chat.id, open('./Images/Game/win.jpg', 'rb'))
-        bot.send_message(message.chat.id, "Вы победили! (+10 монет)", reply_markup=markup)
+
+        if night >= 5:
+
+            bot.send_message(message.chat.id, "Поздравляем, вы прошли игру! Обратите внимание на вкладку бонус в главном меню.", reply_markup=markup)
+        
+        else:
+
+            bot.send_message(message.chat.id, "Вы победили! Ваша зарплата равна 3💰", reply_markup=markup)
 
     else:
 
@@ -286,7 +301,8 @@ def callback(call):
     global crazy_door_left 
     global crazy_vine 
     global crazy_guest 
-    global crazy_vent 
+    global crazy_vent
+    global crazy_storage 
         
     #Бармен (местоположение)
 
@@ -363,9 +379,13 @@ def callback(call):
                 markup = types.InlineKeyboardMarkup(row_width=5)
                 item1 = types.InlineKeyboardButton('Назад->', callback_data='back1')
                 markup.add(item1)
+
                 username = call.from_user.username
                 profile = db_manager.show_profile(username)
+
+                bot.send_photo(call.message.chat.id, open('./Images/Game/profile.jpeg', 'rb'))
                 bot.send_message(call.message.chat.id, f'Ваш профиль: \n Имя {profile[0]} \n Победы {profile[1]} \n Деньги {profile[2]} \n Статусы {profile[3]}', reply_markup=markup)
+
 
         elif call.data == "back1": #Возвращение, если игрок ещё не начал игру
 
@@ -379,7 +399,9 @@ def callback(call):
                 else:
                     markup.add(item1,item2)
 
+                bot.send_photo(call.message.chat.id, open('./Images/Game/menu.jpeg', 'rb'))
                 bot.send_message(call.message.chat.id, 'Меню:', reply_markup=markup)
+
 
         elif call.data == "button_bonus": #Бонус для победителей
 
@@ -392,9 +414,11 @@ def callback(call):
                 item6 = types.InlineKeyboardButton('Назад ->', callback_data='back1')
                 markup.add(item1, item2, item3, item4, item5, item6)
 
+                bot.send_photo(call.message.chat.id, open('./Images/Game/bonus.jpeg', 'rb'))
                 bot.send_message(call.message.chat.id, 'Выберите робота, про которого хотите узнать:', reply_markup=markup)
 
-        elif call.data == "button_cleaner": 
+
+        elif call.data == "button_cleaner": #Инофрмация об уборщике
             
             markup = types.InlineKeyboardMarkup(row_width=1)
             item1 = types.InlineKeyboardButton('Назад ->', callback_data='button_bonus')
@@ -408,7 +432,8 @@ def callback(call):
 
 В игре робот малоопасен и спастить от него довольно легко, но, тем не менее, убить невооруженного охранника он может.""", reply_markup=markup)
 
-        elif call.data == "button_psycho":
+
+        elif call.data == "button_psycho": #Инофрмация о психе
 
             markup = types.InlineKeyboardMarkup(row_width=1)
             item1 = types.InlineKeyboardButton('Назад ->', callback_data='button_bonus')
@@ -421,7 +446,8 @@ def callback(call):
                              
 В игре он чуть опаснее, чем уборщик, ведь движется быстрее. Однако в остальном по принципу действий он очень схож с первым роботом.""", reply_markup=markup)
 
-        elif call.data == "button_barmen":
+
+        elif call.data == "button_barmen": #Инофрмация о бармене
 
             markup = types.InlineKeyboardMarkup(row_width=1)
             item1 = types.InlineKeyboardButton('Назад ->', callback_data='button_bonus')
@@ -434,7 +460,8 @@ def callback(call):
 
 В игре он работает также, как и убощикЮ правда, если он в баре, то может с шансом 10% снять все деньги со счета охранника.""", reply_markup=markup)
 
-        elif call.data == "button_hover":
+
+        elif call.data == "button_hover": #Инофрмация о ховерборде
 
             markup = types.InlineKeyboardMarkup(row_width=1)
             item1 = types.InlineKeyboardButton('Назад ->', callback_data='button_bonus')
@@ -450,7 +477,8 @@ def callback(call):
 если он перемещается между комнатами, то может с шансом 10% удаленно сломтаь планшет охранника, что делает его опасным врагом, а если у охранника не хватит денег на новый планшет,
 то ему придется выживать дальше без камер.""", reply_markup=markup)
 
-        elif call.data == "button_terminator":
+
+        elif call.data == "button_terminator": #Инофрмация о терминаторе
 
             markup = types.InlineKeyboardMarkup(row_width=1)
             item1 = types.InlineKeyboardButton('Назад ->', callback_data='button_bonus')
@@ -1921,12 +1949,29 @@ def callback(call):
                 night += 1
 
                 markup = types.InlineKeyboardMarkup(row_width=2)
-                item1 = types.InlineKeyboardButton('Играть дальше', callback_data='button_game')
+
+                if night >= 5:
+
+                    item1 = types.InlineKeyboardButton('Меню', callback_data='back1')
+
+                else: 
+
+                    item1 = types.InlineKeyboardButton('Играть дальше', callback_data='button_game')
+
                 item2 = types.InlineKeyboardButton('Профиль', callback_data='button_profile')
                 markup.add(item1, item2)
 
                 bot.send_photo(call.message.chat.id, open('./Images/Game/win.jpg', 'rb'))
                 bot.send_message(call.message.chat.id, "Вы победили! (+1 победа, +10 монет)", reply_markup=markup)
+
+                if night >= 5:
+
+                    bot.send_message(call.message.chat.id, "Поздравляем, вы прошли игру! Обратите внимание на вкладку бонус в главном меню.", reply_markup=markup)
+                
+                else:
+
+                    bot.send_message(call.message.chat.id, "Вы победили! Ваша зарплата равна 3💰", reply_markup=markup)
+
 
 
             elif end == True and end_bad == True: #Произошла ошибка
@@ -2271,7 +2316,7 @@ def timer_thread(): #Механика изменения времени
                 ventilation_statement = True
 
 
-def timing_thread(): #Механика передвижения роботов
+def timing_thread(): #Механика передвижения роботовы
 
     global timer, go_cleaner, go_hoverboard, go_сrazy, go_barmen, night, game_started, go_terminator
 
@@ -2389,8 +2434,8 @@ def timing_thread(): #Механика передвижения роботов
                         
                         if a == 50:
                             
-                            go_crazy = True
-                            print(go_crazy)
+                            go_сrazy = True
+                            print(go_сrazy)
 
                         else: 
 
@@ -2403,14 +2448,14 @@ def timing_thread(): #Механика передвижения роботов
                         
                         if a == 2 or a == 3:
                             
-                            go_crazy = True
-                            print(go_crazy)
+                            go_сrazy = True
+                            print(go_сrazy)
 
                         else:
                             
                             print('z')
                             time.sleep(3)
-                            go_crazy = False
+                            go_сrazy = False
                             print(timer)
 
                     elif timer <= 450 and timer > 360: #Рандом пойдет ли уборщик в 2 ночи.
@@ -2420,7 +2465,7 @@ def timing_thread(): #Механика передвижения роботов
 
                         if a == 2 or 3:
 
-                            go_crazy = True
+                            go_сrazy = True
 
                         else:
 
@@ -2429,13 +2474,13 @@ def timing_thread(): #Механика передвижения роботов
 
                             if a == 2 or a == 3:
 
-                                go_crazy == True
-                                print(go_crazy)
+                                go_сrazy == True
+                                print(go_сrazy)
 
                             else:
 
                                 print('i')
-                                go_crazy = False
+                                go_сrazy = False
                                 print(timer)
 
                     elif timer <= 360 and timer > 80: #Рандом пойдет ли уборщик в 3, 4, 5 ночи.
@@ -2445,14 +2490,14 @@ def timing_thread(): #Механика передвижения роботов
 
                         if a == 2 or a == 3:
 
-                            go_crazy = True
-                            print(go_crazy)
+                            go_сrazy = True
+                            print(go_сrazy)
 
                         else:
 
                             print('f')
                             time.sleep(3)
-                            go_crazy = False
+                            go_сrazy = False
                             print(timer)
 
                     elif timer <= 80:
@@ -2462,13 +2507,13 @@ def timing_thread(): #Механика передвижения роботов
 
                         if a == 2 or a == 3 or a == 4: #Рандом пойдет ли уборщик в 6 ночи.
 
-                            go_crazy = True
+                            go_сrazy = True
 
                         else:
 
                             print('m')
                             time.sleep(3)
-                            go_crazy = False
+                            go_сrazy = False
                             print(timer)
 
 
@@ -2776,3 +2821,4 @@ if __name__ == '__main__': #Если данный файл запущен
     polling_timer.start()
     polling_timings.start()
     polling_thread.start()
+    
