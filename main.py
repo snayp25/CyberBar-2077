@@ -154,7 +154,12 @@ def menu(message):
     markup = types.InlineKeyboardMarkup(row_width=2)
     item1 = types.InlineKeyboardButton('Играть', callback_data='button_game')
     item2 = types.InlineKeyboardButton('Профиль', callback_data='button_profile')
-    markup.add(item1,item2)
+    item3 = types.InlineKeyboardButton('БОНУС!!!', callback_data='button_bonus')
+
+    if night >= 5:
+        markup.add(item1,item2,item3)
+    else:
+        markup.add(item1,item2)
 
     bot.send_message(message.chat.id, 'Вот меню:', reply_markup=markup)
 
@@ -179,7 +184,15 @@ def win(message):
         night += 1
 
         markup = types.InlineKeyboardMarkup(row_width=2)
-        item1 = types.InlineKeyboardButton('Играть дальше', callback_data='button_game')
+
+        if night != 5:
+
+            item1 = types.InlineKeyboardButton('Играть дальше', callback_data='button_game')
+
+        else: 
+
+            item1 = types.InlineKeyboardButton('Меню', callback_data='back1')
+
         item2 = types.InlineKeyboardButton('Профиль', callback_data='button_profile')
         markup.add(item1, item2)
 
@@ -359,9 +372,95 @@ def callback(call):
                 markup = types.InlineKeyboardMarkup(row_width=2)
                 item1 = types.InlineKeyboardButton('Играть', callback_data='button_game')
                 item2 = types.InlineKeyboardButton('Профиль', callback_data='button_profile')
-                markup.add(item1,item2)
+                item3 = types.InlineKeyboardButton('БОНУС!!!', callback_data='button_bonus')
+
+                if night >= 5:
+                    markup.add(item1,item2,item3)
+                else:
+                    markup.add(item1,item2)
 
                 bot.send_message(call.message.chat.id, 'Меню:', reply_markup=markup)
+
+        elif call.data == "button_bonus": #Бонус для победителей
+
+                markup = types.InlineKeyboardMarkup(row_width=2)
+                item1 = types.InlineKeyboardButton('Уборщик', callback_data='button_cleaner')
+                item2 = types.InlineKeyboardButton('Псих', callback_data='button_psycho')
+                item3 = types.InlineKeyboardButton('Бармен', callback_data='button_barmen')
+                item4 = types.InlineKeyboardButton('Ховерборд', callback_data='button_hover')
+                item5 = types.InlineKeyboardButton('Терминатор', callback_data='button_terminator')
+                item6 = types.InlineKeyboardButton('Назад ->', callback_data='back1')
+                markup.add(item1, item2, item3, item4, item5, item6)
+
+                bot.send_message(call.message.chat.id, 'Выберите робота, про которого хотите узнать:', reply_markup=markup)
+
+        elif call.data == "button_cleaner": 
+            
+            markup = types.InlineKeyboardMarkup(row_width=1)
+            item1 = types.InlineKeyboardButton('Назад ->', callback_data='button_bonus')
+            markup.add(item1)
+
+            bot.send_photo(call.message.chat.id, open('./Images/Game/storage_cleaner.png', 'rb'))
+            bot.send_message(call.message.chat.id, """Уборщик \n
+В кафе работет несколько уборщиков, которые сменяют друг друга в разных комнатах, а базируются в 
+конмате без камер. Поэтому когда вы на первой ночи видите разных уборщиков-так и должно быть.
+Вообще роботы-уборщики достаточно глупы, и поосле Проекта Революция они выполняли роли пушечного мяса.
+
+В игре робот малоопасен и спастить от него довольно легко, но, тем не менее, убить невооруженного охранника он может.""", reply_markup=markup)
+
+        elif call.data == "button_psycho":
+
+            markup = types.InlineKeyboardMarkup(row_width=1)
+            item1 = types.InlineKeyboardButton('Назад ->', callback_data='button_bonus')
+            markup.add(item1)
+
+            bot.send_photo(call.message.chat.id, open('./Images/Game/guest_room_crazy.jpg', 'rb'))
+            bot.send_message(call.message.chat.id, """Псих \n
+Псих был частым посетителем бара ночью ещё до Проекта Революция. Он любил выпить масла с чили, и излить душу бармену,
+хотя тот его недолюбливал, ведь псих часто устраивал погромы. Во время Проекта он сделал себе руки ножницы и начал убивать.
+                             
+В игре он чуть опаснее, чем уборщик, ведь движется быстрее. Однако в остальном по принципу действий он очень схож с первым роботом.""", reply_markup=markup)
+
+        elif call.data == "button_barmen":
+
+            markup = types.InlineKeyboardMarkup(row_width=1)
+            item1 = types.InlineKeyboardButton('Назад ->', callback_data='button_bonus')
+            markup.add(item1)
+
+            bot.send_photo(call.message.chat.id, open('./Images/Game/vine_room_barmen.jpg', 'rb'))
+            bot.send_message(call.message.chat.id, """Бармен \n
+Бармен работал в баре с самого основания. Создатели вшили в него код, который заставляет его выманивать 
+деньги из посетителей. С начала Проекта Революция он подчинился F404 и начал убивать.
+
+В игре он работает также, как и убощикЮ правда, если он в баре, то может с шансом 10% снять все деньги со счета охранника.""", reply_markup=markup)
+
+        elif call.data == "button_hover":
+
+            markup = types.InlineKeyboardMarkup(row_width=1)
+            item1 = types.InlineKeyboardButton('Назад ->', callback_data='button_bonus')
+            markup.add(item1)
+
+            bot.send_photo(call.message.chat.id, open('./Images/Game/right_door_hover.jpg', 'rb'))
+            bot.send_message(call.message.chat.id, """Ховерборд 
+Никто не знает, откуда он появился. Поговаривают, что это отвратительное существо(вернее киборг, ведь это смесь живого существа и робота)
+было создано самим F404. Он появился в баре спустя 4 ночи после начала Проекта Революция, ведь предыдущим врагам не удалось убить охранника Макса. Также есть теория, что его послал сам F404 как одного из своих самых сильных союзников.
+Сам киборг не умеет говорить, не имеет никаких навыков. Он просто убивает. 
+                             
+В  игре он движется абсолютно также, как и робот на первой ночи, но у него есть особенность:
+если он перемещается между комнатами, то может с шансом 10% удаленно сломтаь планшет охранника, что делает его опасным врагом, а если у охранника не хватит денег на новый планшет,
+то ему придется выживать дальше без камер.""", reply_markup=markup)
+
+        elif call.data == "button_terminator":
+
+            markup = types.InlineKeyboardMarkup(row_width=1)
+            item1 = types.InlineKeyboardButton('Назад ->', callback_data='button_bonus')
+            markup.add(item1)
+
+            bot.send_photo(call.message.chat.id, open('./Images/Game/5_terminator.png', 'rb'))
+            bot.send_message(call.message.chat.id, """Терминатор (он же F404) 
+Он был создан как робот-солдат. Очень  Однако нейросеть CHAT_GPC взломала его по заказу от *ш-ш-ш-ш-ш-ш* hgoy4y873t3735196280629294.... 
+404... 404.. F... F... F... F404!!! F404!!
+Проект Революция был сломлен... Но он вернётся! Однажды мы победим!""", reply_markup=markup)
 
 
 
@@ -2677,4 +2776,3 @@ if __name__ == '__main__': #Если данный файл запущен
     polling_timer.start()
     polling_timings.start()
     polling_thread.start()
-    
