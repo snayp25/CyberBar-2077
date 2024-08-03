@@ -1,7 +1,6 @@
 #Импорты
 
 
-
 from random import *
 from config import *
 from telebot import *
@@ -501,7 +500,7 @@ def callback(call):
             if night >= 5:
                     
                     night == 1
-                    
+
             game_started = True
             
 
