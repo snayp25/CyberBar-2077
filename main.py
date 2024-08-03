@@ -498,8 +498,12 @@ def callback(call):
 
         if call.data == 'button_game' or "button_game" in call.data: #Проверяем, нажали ли кнопку "Играть"
 
+            if night >= 5:
+                    
+                    night == 1
+                    
             game_started = True
-
+            
 
         if game_started: #Проверяем, запущена ли игра
 
