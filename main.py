@@ -1578,7 +1578,7 @@ def callback(call):
                         
                         else:
 
-                            сrazy_guest = True
+                            crazy_guest = True
                             crazy_vine = False
                             go_сrazy = False 
 
@@ -2136,7 +2136,7 @@ def callback(call):
 
             elif crazy_door_left == True and left_door_statement == True and night == 2: #Робот у левой двери
 
-                time.sleep(5) #Даём игроку шанс выжить
+                time.sleep(15) #Даём игроку шанс выжить
 
                 if left_door_statement != False: #Если игок не успел закрыть дверь, то робот его убивает
 
@@ -2158,7 +2158,7 @@ def callback(call):
 
             elif crazy_vent == True and ventilation_statement == True and night == 2: #Робот в вентиляции
 
-                time.sleep(5) #Даём игроку шанс выжить
+                time.sleep(15) #Даём игроку шанс выжить
 
                 if ventilation_statement != False: #Если игок не успел закрыть вентиляцию, то робот его убивает
 
@@ -2180,7 +2180,7 @@ def callback(call):
 
             elif hover_door_right == True and right_door_statement == True and night == 4: #Робот у правой двери
 
-                time.sleep(5) #Даём игроку шанс выжить
+                time.sleep(15) #Даём игроку шанс выжить
                 
                 if right_door_statement != False: #Если игок не успел закрыть дверь, то робот его убивает
 
@@ -2202,7 +2202,7 @@ def callback(call):
 
             elif hover_door_left == True and left_door_statement == True and night == 4: #Робот у левой двери
 
-                time.sleep(5) #Даём игроку шанс выжить
+                time.sleep(15) #Даём игроку шанс выжить
 
                 if left_door_statement != False: #Если игок не успел закрыть дверь, то робот его убивает
 
@@ -2224,7 +2224,7 @@ def callback(call):
 
             elif hover_vent == True and ventilation_statement == True and night == 4: #Робот в вентиляции
 
-                time.sleep(5) #Даём игроку шанс выжить
+                time.sleep(15) #Даём игроку шанс выжить
 
                 if ventilation_statement != False: #Если игок не успел закрыть вентиляцию, то робот его убивает
 
@@ -2273,7 +2273,7 @@ def timer_thread(): #Механика изменения времени
 
         if game_started != True:
 
-            None
+            pass
 
         else:
 
@@ -2324,7 +2324,7 @@ def timing_thread(): #Механика передвижения роботовы
 
         if game_started != True: #Проверяем, началась ли игра
 
-            None 
+            pass
 
         else:
 
