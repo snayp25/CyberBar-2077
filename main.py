@@ -36,7 +36,6 @@ end_bad = False
 
 #Роботы
 
-crazy_guest
 
 #Уборщик
 
@@ -83,8 +82,7 @@ hover_storage = False
 go_terminator = False 
 terminator_vent = False 
 terminator_fifth_room = True #Появление терминатора в комнате, которая за камерой, которая до 5-ой ночи сломана
-
-
+terminator_atack = False #Атакует ли терминатор
 
 #Состояние дверей и вентиляции
 
@@ -357,7 +355,7 @@ def callback(call):
     global go_barmen
     global go_hoverboard
     global go_terminator
-
+    global terminator_atack
     #Время
 
     global night
@@ -1523,7 +1521,7 @@ def callback(call):
 
                 else:
 
-                    if сrazy_guest:
+                    if crazy_guest:
 
                         a = randint(0, 4)
 
@@ -1906,14 +1904,9 @@ def callback(call):
                                         go_terminator = False
                                         terminator_vent = False
                                         terminator_fifth_room = True
-                                        return
+                                        return         
                                     else:
-                                        end_bad = True
-                                        return
-                                else:
-                                    time.sleep(1)
-                                    end_bad = True
-                                    return                      
+                                        terminator_atack = True        
                         elif ventilation_statement == True:
                             time.sleep(8)
                             if ventilation_statement == False:
@@ -1924,12 +1917,7 @@ def callback(call):
                                     terminator_fifth_room = True
                                     return
                                 else:
-                                    end_bad = True
-                                    return
-                            else:
-                                time.sleep(1)
-                                end_bad = True
-                                return                      
+                                    terminator_atack = True  
                     tablet_broke = randint(0, 5)
                     if tablet_broke == 3:
                         tablet_statement = False             
@@ -2244,7 +2232,17 @@ def callback(call):
                 else:
 
                     go_hoverboard = True
+            elif terminator_vent == True and terminator_atack == True and night == 5:
+                timer = 0 
+                game_started = False
 
+                markup = types.InlineKeyboardMarkup(row_width=2)
+                item1 = types.InlineKeyboardButton('Играть снова', callback_data='button_game')
+                item2 = types.InlineKeyboardButton('Профиль', callback_data='button_profile')
+                markup.add(item1,item2)
+
+                bot.send_photo(call.message.chat.id, open('./Images/Game/loose.jpg', 'rb'))
+                bot.send_message(call.message.chat.id, "Вы проиграли!", reply_markup=markup)
 
 
 #Функции и механики
