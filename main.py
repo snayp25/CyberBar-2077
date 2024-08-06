@@ -36,7 +36,7 @@ end_bad = False
 
 #Роботы
 
-
+crazy_guest
 
 #Уборщик
 
@@ -50,7 +50,7 @@ cleaner_storage = True
 
 #Псих
 
-go_сrazy = False 
+go_crazy = False 
 crazy_door_right = False
 crazy_door_left = False
 crazy_vine = False
@@ -353,7 +353,7 @@ def callback(call):
     #Передвижение роботов
 
     global go_cleaner
-    global go_сrazy 
+    global go_crazy 
     global go_barmen
     global go_hoverboard
     global go_terminator
@@ -1499,7 +1499,7 @@ def callback(call):
                             return
 
 
-            if go_сrazy == True: #Псих
+            if go_crazy == True: #Псих
                 if crazy_storage:
 
                     b = randint(0, 11)
@@ -1509,7 +1509,7 @@ def callback(call):
 
                         cleaner_guest = True
                         cleaner_storage = False
-                        go_сrazy = False
+                        go_crazy = False
 
                         return 
                     
@@ -1517,7 +1517,7 @@ def callback(call):
 
                         cleaner_vine = True
                         cleaner_storage = False
-                        go_сrazy = False 
+                        go_crazy = False 
 
                         return 
 
@@ -1530,24 +1530,24 @@ def callback(call):
                         if a == 0:
 
                             crazy_door_left = True
-                            сrazy_guest = False
-                            go_сrazy = False
+                            crazy_guest= False
+                            go_crazy = False
 
                             return 
                         
                         elif a == 3:
 
                             crazy_storage = True
-                            сrazy_guest = False
-                            go_сrazy = False
+                            crazy_guest= False
+                            go_crazy = False
 
                             return 
 
                         else: 
 
                             crazy_vine = True
-                            сrazy_guest = False
-                            go_сrazy = False
+                            crazy_guest= False
+                            go_crazy = False
 
                             return 
 
@@ -1559,7 +1559,7 @@ def callback(call):
 
                             crazy_door_right = True
                             crazy_vine = False
-                            go_сrazy = False
+                            go_crazy = False
 
                             return 
                         
@@ -1567,7 +1567,7 @@ def callback(call):
 
                             crazy_storage = True
                             crazy_vine = False
-                            go_сrazy = False
+                            go_crazy = False
 
                             return 
                         
@@ -1575,7 +1575,7 @@ def callback(call):
 
                             crazy_vent = True
                             crazy_vine = False
-                            go_сrazy = False
+                            go_crazy = False
 
                             return
                         
@@ -1583,7 +1583,7 @@ def callback(call):
 
                             crazy_guest = True
                             crazy_vine = False
-                            go_сrazy = False 
+                            go_crazy = False 
 
                             return 
 
@@ -1594,7 +1594,7 @@ def callback(call):
 
                             crazy_vine = True
                             crazy_door_right = False
-                            go_сrazy = False 
+                            go_crazy = False 
 
                             return 
                     
@@ -1602,10 +1602,9 @@ def callback(call):
                         if left_door_statement == False:
 
                             time.sleep(5)
-
-                            сrazy_guest = True
+                            crazy_guest = True
                             crazy_door_left = False
-                            go_сrazy = False 
+                            go_crazy = False 
 
                             return 
 
@@ -1616,7 +1615,7 @@ def callback(call):
 
                             crazy_vine = True
                             crazy_vent = False
-                            go_сrazy = False 
+                            go_crazy = False 
 
                             return 
 
@@ -2134,7 +2133,7 @@ def callback(call):
 
                 else:
 
-                    go_сrazy = True
+                    go_crazy = True
 
 
             elif crazy_door_left == True and left_door_statement == True and night == 2: #Робот у левой двери
@@ -2156,7 +2155,7 @@ def callback(call):
 
                 else:
 
-                    go_сrazy = True
+                    go_crazy = True
 
 
             elif crazy_vent == True and ventilation_statement == True and night == 2: #Робот в вентиляции
@@ -2178,7 +2177,7 @@ def callback(call):
 
                 else:
 
-                    go_сrazy= True
+                    go_crazy= True
 
 
             elif hover_door_right == True and right_door_statement == True and night == 4: #Робот у правой двери
@@ -2200,7 +2199,7 @@ def callback(call):
 
                 else:
 
-                    go_сrazy = True
+                    go_crazy = True
 
 
             elif hover_door_left == True and left_door_statement == True and night == 4: #Робот у левой двери
@@ -2222,7 +2221,7 @@ def callback(call):
 
                 else:
 
-                    go_сrazy = True
+                    go_crazy = True
 
 
             elif hover_vent == True and ventilation_statement == True and night == 4: #Робот в вентиляции
@@ -2326,10 +2325,9 @@ def timer_thread(): #Механика изменения времени
         else:
             pass
 
+def timing_thread(): #Механика передвижения роботов
 
-def timing_thread(): #Механика передвижения роботовы
-
-    global timer, go_cleaner, go_hoverboard, go_сrazy, go_barmen, night, game_started, go_terminator
+    global timer, go_cleaner, go_hoverboard, go_crazy, go_barmen, night, game_started, go_terminator
 
     while True:
 
@@ -2445,8 +2443,8 @@ def timing_thread(): #Механика передвижения роботовы
                         
                         if a == 50:
                             
-                            go_сrazy = True
-                            print(go_сrazy)
+                            go_crazy = True
+                            print(go_crazy)
 
                         else: 
 
@@ -2459,14 +2457,14 @@ def timing_thread(): #Механика передвижения роботовы
                         
                         if a == 2 or a == 3:
                             
-                            go_сrazy = True
-                            print(go_сrazy)
+                            go_crazy = True
+                            print(go_crazy)
 
                         else:
                             
                             print('z')
                             time.sleep(3)
-                            go_сrazy = False
+                            go_crazy = False
                             print(timer)
 
                     elif timer <= 450 and timer > 360: #Рандом пойдет ли уборщик в 2 ночи.
@@ -2476,7 +2474,7 @@ def timing_thread(): #Механика передвижения роботовы
 
                         if a == 2 or 3:
 
-                            go_сrazy = True
+                            go_crazy = True
 
                         else:
 
@@ -2485,13 +2483,13 @@ def timing_thread(): #Механика передвижения роботовы
 
                             if a == 2 or a == 3:
 
-                                go_сrazy == True
-                                print(go_сrazy)
+                                go_crazy == True
+                                print(go_crazy)
 
                             else:
 
                                 print('i')
-                                go_сrazy = False
+                                go_crazy = False
                                 print(timer)
 
                     elif timer <= 360 and timer > 80: #Рандом пойдет ли уборщик в 3, 4, 5 ночи.
@@ -2501,14 +2499,14 @@ def timing_thread(): #Механика передвижения роботовы
 
                         if a == 2 or a == 3:
 
-                            go_сrazy = True
-                            print(go_сrazy)
+                            go_crazy = True
+                            print(go_crazy)
 
                         else:
 
                             print('f')
                             time.sleep(3)
-                            go_сrazy = False
+                            go_crazy = False
                             print(timer)
 
                     elif timer <= 80:
@@ -2518,13 +2516,13 @@ def timing_thread(): #Механика передвижения роботовы
 
                         if a == 2 or a == 3 or a == 4: #Рандом пойдет ли уборщик в 6 ночи.
 
-                            go_сrazy = True
+                            go_crazy = True
 
                         else:
 
                             print('m')
                             time.sleep(3)
-                            go_сrazy = False
+                            go_crazy = False
                             print(timer)
 
 
