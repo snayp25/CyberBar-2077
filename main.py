@@ -138,7 +138,7 @@ def help(message):
     bot.reply_to(message, "Мои комманды: /start - старт, /help - помощь, /menu - инлайн меню.")
 
 
-@bot.message_handler(commands=["console"]) #Консоль (только для админа)
+@bot.message_handler(commands=["admin"]) #Консоль (только для админа)
 def console(message):
 
     status = db_manager.check_status(message.from_user.username)
