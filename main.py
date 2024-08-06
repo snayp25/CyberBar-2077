@@ -2305,36 +2305,44 @@ def timer_thread(): #Механика изменения времени
 
                 end = True
                 break
+            if night == 5:
+                if vent_timer > 0:
+                    if ventilation_statement == False:
 
+                        vent_timer -= 1
+                
+                else:
+
+                    ventilation_statement = True
             #Открытие дверей и вентиляции если они слишком долго закрыты
-
-            if right_door_timer > 0:
-                if right_door_statement == False:
-                        
-                        right_door_timer -= 1
-
             else:
+                if right_door_timer > 0:
+                    if right_door_statement == False:
+                            
+                            right_door_timer -= 1
 
-                right_door_statement = True
+                else:
 
-            if left_door_timer > 0:
-                if left_door_statement == False:
+                    right_door_statement = True
 
-                    left_door_timer -= 1
-            
-            else:
+                if left_door_timer > 0:
+                    if left_door_statement == False:
 
-                left_door_statement = True
+                        left_door_timer -= 1
+                
+                else:
 
-            
-            if vent_timer > 0:
-                if ventilation_statement == False:
+                    left_door_statement = True
 
-                    vent_timer -= 1
-            
-            else:
+                
+                if vent_timer > 0:
+                    if ventilation_statement == False:
 
-                ventilation_statement = True
+                        vent_timer -= 1
+                
+                else:
+
+                    ventilation_statement = True
 
             #Проверяем закончилась ли игра
             if end == True or end_bad == True:
