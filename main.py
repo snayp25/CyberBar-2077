@@ -2262,6 +2262,7 @@ def timer_thread(): #Механика изменения времени
 
     global end
     global game_started
+    global end_bad
 
     global timer
     global vent_timer
@@ -2273,12 +2274,7 @@ def timer_thread(): #Механика изменения времени
     global ventilation_statement
 
     while True:
-
-        if game_started != True:
-
-            pass
-
-        else:
+        if game_started:
 
             time.sleep(1)
             timer -= 1
@@ -2317,6 +2313,18 @@ def timer_thread(): #Механика изменения времени
             else:
 
                 ventilation_statement = True
+
+            #Проверяем закончилась ли игра
+            if end == True or end_bad == True:
+                #Если да то ждем 1 сек чтоб бот отдохнул и возвращаем таймер к старому значению и отключаем конец плохой конец на всякий случай и игра начата 
+                time.sleep(1)
+                timer = 630
+                end = False
+                end_bad = False
+                game_started = False
+        #На всякий случай чтобы код не ломался.
+        else:
+            pass
 
 
 def timing_thread(): #Механика передвижения роботовы
