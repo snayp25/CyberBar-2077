@@ -32,7 +32,7 @@ game_started = False
 end = False
 night = 1 
 end_bad = False
-
+# admin_night = False
 
 #Роботы
 
@@ -137,9 +137,17 @@ def help(message):
 
     bot.reply_to(message, "Мои комманды: /start - старт, /help - помощь, /menu - инлайн меню.")
 
-
-@bot.message_handler(commands=["admin"]) #Консоль (только для админа)
+@bot.message_handler(commands=["console"]) #Консоль (только для админа)
 def console(message):
+    status = db_manager.check_status(message.from_user.username)
+    if status == 'admin' or 'tester':
+
+        bot.reply_to(message, "/admin - комманды разрабов, /tester - комманды тестеровщиков")
+    else:
+
+        bot.reply_to(message, "У вас нет прав использовать команды админа!")
+@bot.message_handler(commands=["admin"]) #Консоль (только для админа)
+def admin_commands(message):
 
     status = db_manager.check_status(message.from_user.username)
     if status == 'admin': #Проверяем статус игрока
@@ -184,7 +192,7 @@ def win(message):
 
         end  = True
         timer = 0 
-        game_started  = False
+        game_started = False
         night += 1
 
         markup = types.InlineKeyboardMarkup(row_width=2)
@@ -228,7 +236,7 @@ def kill(message):
     if status == 'admin': #Проверяем статус игрока
 
         timer = 0 
-        game_started  = False
+        game_started = False
 
         markup = types.InlineKeyboardMarkup(row_width=2)
         item1 = types.InlineKeyboardButton('Играть снова', callback_data='button_game')
@@ -248,19 +256,24 @@ def night_set(message):
 
     global game_started
     global timer
-    global admin_night
+    global end
+    global end_bad
+    # global admin_night
 
     status = db_manager.check_status(message.from_user.username)
-    if status == 'admin': #Проверяем статус игрока
+    if status == 'admin' or 'tester': #Проверяем статус игрока
 
-        admin_night = True
-        timer = 0 
-        game_started  = False
-
+        # admin_night = True
+        game_started = False
+        timer = 0
+        timer = 360
+        end = False
+        end_bad = False
+        
         markup = types.InlineKeyboardMarkup(row_width=2)
         for i in range(1, 6):
 
-            s =  'button_game' + '|' + str(i)
+            s = 'button_game' + '|' + str(i)
 
             item1 = types.InlineKeyboardButton(f'Ночь {i}', callback_data=s)
             markup.add(item1)
@@ -271,7 +284,16 @@ def night_set(message):
     else:
 
         bot.reply_to(message, "У вас нет прав использовать команды админа!")
+@bot.message_handler(commands=["tester"])
+def tester_commands(message):
+    status = db_manager.check_status(message.from_user.username)
+    if status == 'tester' or 'admin': #Проверяем статус игрока
 
+        bot.reply_to(message, "Комманды тестировщика: \n /night - выбор ночи")
+
+    else:
+
+        bot.reply_to(message, "У вас нет прав использовать команды админа!")
 
 
 
@@ -495,9 +517,9 @@ def callback(call):
 
         if call.data == 'button_game' or "button_game" in call.data: #Проверяем, нажали ли кнопку "Играть"
 
-            if night >= 5:
+            if night >= 6:
                     
-                    night == 1
+                    night = 1
 
             game_started = True
             
@@ -505,10 +527,7 @@ def callback(call):
         if game_started: #Проверяем, запущена ли игра
 
 
-
             #Кнопки в базовом меню
-
-
 
 
             if call.data == 'button_game' or "button_game" in call.data:  #Переход в игру
@@ -530,8 +549,10 @@ def callback(call):
                 if night == 1: #Проверяем, какая ночь (здесь важно только первая или нет)
 
                     bot.send_photo(call.message.chat.id, open('./Images/Game/security_room.jpeg', 'rb'))
-                    bot.send_message(call.message.chat.id, 'Вы устроились охранником в баре где недавно появились ИИ роботы, интересно, почему после появления роботов у них появился такой спрос на охрану?\nВаша задача, охранять бар до 6 утра(бар открывается в это время), вы можете смотреть камеры и закрывать двери, вы работаете 7 ночей, а потом вас заменит на время другой охранник, удачи!', reply_markup=markup)
-                
+                    bot.send_message(call.message.chat.id, 'Вы устроились охранником в баре где недавно появились ИИ роботы, интересно, почему после появления роботов у них появился такой спрос на охрану?\nВаша задача, охранять бар до 6 утра(бар открывается в это время), вы можете смотреть камеры и закрывать двери, вы работаете 4 ночи, а потом вас заменит на время другой охранник, удачи!', reply_markup=markup)
+                elif night == 5:
+                    bot.send_photo(call.message.chat.id, open('./Images/Game/security_room.jpeg', 'rb'))
+                    bot.send_message(call.message.chat.id, 'Странно, уже 5-ая ночь а я досих пор здесь, тут явно что-то неладное, стоп, А ПОЧЕМУ НЕРАБОТАЮТ ВСЕ КАМЕРЫ КРОМЕ 4, стоп..... 5-ая камера заработала..... т.. т... т.. тут терминатор!', reply_markup=markup)
                 else:
 
                     bot.send_photo(call.message.chat.id, open('./Images/Game/security_room.jpeg', 'rb'))
@@ -696,19 +717,20 @@ def callback(call):
                             bot.send_photo(call.message.chat.id, open('./Images/Game/left_door_open.jpg', 'rb'))
 
                     elif night == 5:
-
-                        bot.send_photo(call.message.chat.id, open('./Images/Game/left_door_open.jpg', 'rb'))
-
-
-                    bot.send_message(call.message.chat.id, 'Дверь открыта.', reply_markup=markup)
+                        bot.send_photo(call.message.chat.id, open('./Images/Game/left_door_closed.jpg', 'rb'))                        
 
                 else: #Дверь закрыта
 
                     item1 = types.InlineKeyboardButton('Открыть', callback_data='change_left_door_statement')   
                     markup.add(item1, item2)
 
-                    bot.send_photo(call.message.chat.id, open('./Images/Game/left_door_closed.jpg', 'rb'))
-                    bot.send_message(call.message.chat.id, 'Дверь закрыта.', reply_markup=markup)
+                    if night == 5:
+                        bot.send_photo(call.message.chat.id, open('./Images/Game/left_door_closed.jpg', 'rb'))
+                        bot.send_message(call.message.chat.id, 'Дверь закрыта.', reply_markup=markup)
+                    else:
+                        bot.send_photo(call.message.chat.id, open('./Images/Game/left_door_open.jpg', 'rb'))
+                        bot.send_message(call.message.chat.id, 'Дверь открыта.', reply_markup=markup)
+                    bot.send_message(call.message.chat.id, 'Дверь открыта.', reply_markup=markup)
 
 
             elif call.data == "button_right_door":  #Правая дверь
@@ -762,7 +784,7 @@ def callback(call):
 
                     elif night == 5:
 
-                        bot.send_photo(call.message.chat.id, open('./Images/Game/right_door_open.jpg', 'rb'))
+                        bot.send_photo(call.message.chat.id, open('./Images/Game/right_door_closed.jpg', 'rb'))
                         
                     bot.send_message(call.message.chat.id, 'Дверь закрыта.', reply_markup=markup)
                              
@@ -770,9 +792,12 @@ def callback(call):
                     
                     item1 = types.InlineKeyboardButton('Открыть', callback_data='change_right_door_statement')   
                     markup.add(item1, item2)
-
-                    bot.send_photo(call.message.chat.id, open('./Images/Game/right_door_closed.jpg', 'rb'))
-                    bot.send_message(call.message.chat.id, 'Дверь закрыта.', reply_markup=markup)
+                    if night == 5:
+                        bot.send_photo(call.message.chat.id, open('./Images/Game/right_door_closed.jpg', 'rb'))
+                        bot.send_message(call.message.chat.id, 'Дверь закрыта.', reply_markup=markup)
+                    else:
+                        bot.send_photo(call.message.chat.id, open('./Images/Game/right_door_open.jpg', 'rb'))
+                        bot.send_message(call.message.chat.id, 'Дверь открыта.', reply_markup=markup)
 
 
             elif call.data == "button_shop": #Переход в магазин
