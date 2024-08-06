@@ -24,7 +24,7 @@ def create_table(username, win, coin): #Создание таблицы
 
 
         cur = conn.cursor()
-        cur.execute("CREATE TABLE IF NOT EXISTS players (username, wins, coins, status)")
+        cur.execute("CREATE TABLE IF NOT EXISTS players (username, wins, coins, status, game_started, night)")
 
 
         result = cur.execute("SELECT username FROM players")
@@ -68,7 +68,7 @@ def create_table(username, win, coin): #Создание таблицы
             cur.execute("INSERT INTO players (username, wins, coins) VALUES (?, ?, ?)", (username, wins, coins))
 
 
-def add_user(username, wins, coins, status): #Добавление пользователя
+def add_user(username, wins, coins, status, night, game_started): #Добавление пользователя
 
     conn = sqlite3.connect(DB)
 
@@ -77,19 +77,14 @@ def add_user(username, wins, coins, status): #Добавление пользо�
         cur = conn.cursor()
         result = cur.execute("SELECT username FROM players")
 
-        names = ""
-
-        for row in result:
-
-            names += " ".join(row)
             
-        if username in names: #Проверяем, есть ли такой пользователь
+        if username in result: #Проверяем, есть ли такой пользователь
 
-            cur.execute("UPDATE players SET wins = ?,  coins = ? WHERE username = ?", (wins, coins, username))
+            cur.execute("UPDATE players SET wins = ?, coins = ?, night = ?, game_started  = ?, WHERE username = ?", (wins, coins, night, game_started, username))
                         
         else:
 
-            cur.execute("INSERT INTO players (username, wins, coins,  status) VALUES (?, ?, ?, ?)", (username, wins, coins, status))
+            cur.execute("INSERT INTO players (username, wins, coins,  status, night, game_started) VALUES (?, ?, ?, ?, ?, ?)", (username, wins, coins, status, night, game_started))
 
 
 def check_status(username): #Проверка статуса игрока (админ или нет)
@@ -113,6 +108,42 @@ def check_status(username): #Проверка статуса игрока (ад�
 
             return f.fetchall()[0][0]
     
+
+def check_game_started(username): #Отображение игрового статуса
+
+    conn = sqlite3.connect(DB)
+
+    with conn:
+
+        cur = conn.cursor() 
+        result = cur.execute("SELECT game_started FROM players WHERE username is ?", ([username]))
+
+        game_started = ""
+
+        for row in result:
+
+            game_started += " ".join(row)
+
+        return game_started
+    
+
+def check_night(username):
+    
+    conn = sqlite3.connect(DB)
+
+    with conn:
+
+        cur = conn.cursor() 
+        result = cur.execute("SELECT night FROM players WHERE username is ?", ([username]))
+
+        night = ""
+
+        for row in result:
+
+            night += " ".join(row)
+
+        return int(night)
+
 
 def show_coins(username): #Отображение монет
 
@@ -310,4 +341,4 @@ def update_assortiment(product_name, value): #Обновление ассорт�
 if __name__ == "__main__": #Если файл запущен
     #update_wins('dark_lord_plagas', '0')
     #show_coins('dark_lord_plagas')
-    show_profile('dark_lord_plagas')
+    add_user('kotterminator', '0', '100', 'admin', '1', 'False')
