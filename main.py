@@ -24,34 +24,7 @@ bot = TeleBot(TOKEN)
 
 timer = 630 
 
-username = " "
 #Состояние игры
-game_started_check = "False"
-if username != " ":
-    while True:
-        if game_started_check != "True":
-            game_started_check = db_manager.select_game_started(username)
-else:
-    pass
-if game_started_check == "False":
-    game_started = False
-elif game_started_check == "True":
-    game_started = True
-night_check = "1"
-if username != " ":
-    night_check = db_manager.select_night(username)
-else:
-    pass
-if night_check == "1":
-    night = 1
-elif night_check == "2":
-    night = 2
-elif night_check == "3":
-    night = 3
-elif night_check == "4":
-    night = 4
-elif night_check == "5":
-    night = 5
 game_started = False
 end = False
 night = 1 
@@ -222,7 +195,6 @@ def win(message):
         end = True
         timer = 0 
         game_started = False
-        db_manager.increase_night(username)
 
         markup = types.InlineKeyboardMarkup(row_width=2)
 
@@ -413,8 +385,6 @@ def callback(call):
     global hour
     global timer
     #Для того чтобы было для каждого локально
-    global username
-
     if call.message: #Обработка нажатий
 
 
@@ -429,7 +399,6 @@ def callback(call):
                 item1 = types.InlineKeyboardButton('Назад->', callback_data='back1')
                 markup.add(item1)
 
-                username = call.from_user.username
                 profile = db_manager.show_profile(username)
 
                 bot.send_photo(call.message.chat.id, open('./Images/Game/profile.jpeg', 'rb'))
@@ -551,7 +520,7 @@ def callback(call):
                     
                     night = 1
 
-            db_manager.start_game(username)
+            game_started = True
             
 
         if game_started: #Проверяем, запущена ли игра
@@ -590,7 +559,6 @@ def callback(call):
 
                 battery = 4
                 battery_timer = random.randint(100, 201)
-                db_manager.start_game(call.from_user.username)
                 timer = 630 
                 end = False
                 
@@ -1985,13 +1953,13 @@ def callback(call):
 
             if end == True: #Хороший конец
 
-                username = call.message.from_user.username
-                db_manager.add_coins_wins(username, "1", str(int(db_manager.show_coins("test"))+10))
+                db_manager.update_coins(call.from_user.username, str(int(db_manager.show_coins(call.from_user.username))+3))
+                db_manager.update_wins(call.from_user.username, str(int(db_manager.show_wins(call.from_user.username))+1))
 
                 timer = 0 
                 game_started = False
                 go_cleaner = False
-                db_manager.increase_night(username)
+                night += 1
 
                 markup = types.InlineKeyboardMarkup(row_width=2)
 
@@ -2777,101 +2745,101 @@ def timing_thread(): #Механика передвижения роботов
                             time.sleep(5)
                             go_hoverboard = False
                             print(timer) #Нужно для тестирования
-                    elif night  == 5: #Ночь 5 (Терминатор)
-                        go_crazy = False
-                        go_cleaner = False
-                        go_barmen = False
-                        go_terminator
-                        if timer >= 541: 
-                                
-                                time.sleep(5)
-                                a = randint(1, 100)
-                                
-                                if a == 50:
-                                    
-                                    go_hoverboard = True
-                                    print(go_terminator) #Нужно для тестирования
-
-                                else: 
-
-                                    print(timer) #Нужно для тестирования
-
-                        elif timer <= 540 and timer > 450:  
+            elif night  == 5: #Ночь 5 (Терминатор)
+                go_crazy = False
+                go_cleaner = False
+                go_barmen = False
+                go_terminator
+                if timer >= 541: 
+                        
+                        time.sleep(5)
+                        a = randint(1, 100)
+                        
+                        if a == 50:
                             
-                            time.sleep(5)
-                            a = randint(1, 5)
-                            
-                            if a == 2 or a == 3:
-                                
-                                go_terminator= True
-                                print(go_terminator) #Нужно для тестирования
+                            go_hoverboard = True
+                            print(go_terminator) #Нужно для тестирования
 
-                            else:
-                                
-                                print('z') #Нужно для тестирования
-                                time.sleep(5)
-                                go_terminator = False
-                                print(timer) #Нужно для тестирования
+                        else: 
 
-                        elif timer <= 450 and timer > 360: 
+                            print(timer) #Нужно для тестирования
 
-                            time.sleep(5)
-                            a = randint(1, 5)
+                elif timer <= 540 and timer > 450:  
+                    
+                    time.sleep(5)
+                    a = randint(1, 5)
+                    
+                    if a == 2 or a == 3:
+                        
+                        go_terminator= True
+                        print(go_terminator) #Нужно для тестирования
 
-                            if a == 2 or 3:
+                    else:
+                        
+                        print('z') #Нужно для тестирования
+                        time.sleep(5)
+                        go_terminator = False
+                        print(timer) #Нужно для тестирования
 
-                                go_terminator = True
-                                print(go_terminator) #Нужно для тестирования
+                elif timer <= 450 and timer > 360: 
 
-                            else:
+                    time.sleep(5)
+                    a = randint(1, 5)
 
-                                time.sleep(5)
-                                a = randint(1,4)
+                    if a == 2 or 3:
 
-                                if a == 2 or a == 3:
+                        go_terminator = True
+                        print(go_terminator) #Нужно для тестирования
 
-                                    go_terminator == True
-                                    print(go_terminator) #Нужно для тестирования
+                    else:
 
-                                else:
+                        time.sleep(5)
+                        a = randint(1,4)
 
-                                    print('i')
-                                    go_terminator = False
-                                    print(timer) #Нужно для тестирования
+                        if a == 2 or a == 3:
 
-                        elif timer <= 360 and timer > 80: #Рандом пойдет ли бармен в 3, 4, 5 ночи.
+                            go_terminator == True
+                            print(go_terminator) #Нужно для тестирования
 
-                            time.sleep(5)
-                            a = randint(1, 5)
+                        else:
 
-                            if a == 2 or a == 3:
+                            print('i')
+                            go_terminator = False
+                            print(timer) #Нужно для тестирования
 
-                                go_barmen = True
-                                print(go_hoverboard) #Нужно для тестирования
+                elif timer <= 360 and timer > 80: #Рандом пойдет ли бармен в 3, 4, 5 ночи.
 
-                            else:
+                    time.sleep(5)
+                    a = randint(1, 5)
 
-                                print('f') #Нужно для тестирования
-                                time.sleep(5)
-                                go_hoverboard = False
-                                print(timer) #Нужно для тестирования
+                    if a == 2 or a == 3:
 
-                        elif timer <= 80:
+                        go_terminator = True
+                        print(go_terminator) #Нужно для тестирования
 
-                            time.sleep(5)
-                            a = randint(1, 4)
+                    else:
 
-                            if a == 2 or a == 3 or a == 4: #Рандом пойдет ли ховерборд в 6 ночи.
+                        print('f') #Нужно для тестирования
+                        time.sleep(5)
+                        go_hoverboard = False
+                        print(timer) #Нужно для тестирования
 
-                                go_hoverboard = True
-                                print(go_hoverboard) #Нужно для тестирования
+                elif timer <= 80:
 
-                            else:
+                    time.sleep(5)
+                    a = randint(1, 4)
 
-                                print('m') #Нужно для тестирования
-                                time.sleep(5)
-                                go_hoverboard = False
-                                print(timer) #Нужно для тестирования
+                    if a == 2 or a == 3 or a == 4: #Рандом пойдет ли ховерборд в 6 ночи.
+
+                        go_terminator = True
+                        print(go_terminator) #Нужно для тестирования
+
+                    else:
+
+                        print('m') #Нужно для тестирования
+                        time.sleep(5)
+                        go_terminator = False
+                        print(timer) #Нужно для тестирования
 
 
 
