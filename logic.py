@@ -305,7 +305,7 @@ def select_game_started(username):
 
     with conn:
         cur = conn.cursor() 
-        result = cur.execute("SELECT game_started FROM players WHERE username = ?", ([username]))
+        result = cur.execute("SELECT game_started FROM players WHERE username is ?", ([username]))
 
         game_condition = ""
 
@@ -319,7 +319,7 @@ def select_night(username):
 
     with conn:
         cur = conn.cursor() 
-        result = cur.execute("SELECT night FROM players WHERE username = ?", ([username]))
+        result = cur.execute("SELECT night FROM players WHERE username is ?", ([username]))
 
         night = ""
 
@@ -333,19 +333,27 @@ def start_game(username):
 
     with conn:
         cur = conn.cursor() 
-        cur.execute("INSERT INTO players (game_started) VALUES ('True') WHERE username = ?", ([username]))
+        cur.execute("INSERT INTO players (game_started) VALUES ('True') WHERE username is ?", ([username]))
 def increase_night(username):
     conn = sqlite3.connect(DB)
 
     with conn:
         cur = conn.cursor() 
-        result = cur.execute("SELECT night FROM players WHERE username = ?", ([username]))
+        result = cur.execute("SELECT night FROM players WHERE username is ?", ([username]))
 
         night = ""
 
         for row in result:
 
             night += " ".join(row)
+        if night == "6":
+            night = 1
+        elif night == "0":
+            night = 1
+        elif night == "5":
+            night = 1
+        else:
+            night += "1"
         cur.execute("INSERT INTO players (night) VALUES (?) WHERE username = ?", ([username], [night]))     
 if __name__ == "__main__": #Если файл запущен
     #update_wins('dark_lord_plagas', '0')
