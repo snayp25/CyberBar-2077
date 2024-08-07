@@ -300,61 +300,65 @@ def update_assortiment(product_name, value): #Обновление ассорт�
         cur = conn.cursor() 
         cur.execute("UPDATE products SET product_count = ? WHERE product_name is ?", ([value, product_name]))
  
-def select_game_started(username):
-    conn = sqlite3.connect(DB)
+# def select_game_started(username):
+#     conn = sqlite3.connect(DB)
 
-    with conn:
-        cur = conn.cursor() 
-        result = cur.execute("SELECT game_started FROM players WHERE username is ?", ([username]))
+#     with conn:
+#         cur = conn.cursor() 
+#         result = cur.execute("SELECT game_started FROM players WHERE username is ?", ([username]))
 
-        game_condition = ""
+#         game_condition = ""
 
-        for row in result:
+#         for row in result:
 
-            game_condition += " ".join(row)
+#             game_condition += " ".join(row)
             
-        return game_condition
-def select_night(username):
-    conn = sqlite3.connect(DB)
+#         return game_condition
+# def select_night(username):
+#     conn = sqlite3.connect(DB)
 
-    with conn:
-        cur = conn.cursor() 
-        result = cur.execute("SELECT night FROM players WHERE username is ?", ([username]))
+#     with conn:
+#         cur = conn.cursor() 
+#         result = cur.execute("SELECT night FROM players WHERE username is ?", ([username]))
 
-        night = ""
+#         night = ""
 
-        for row in result:
+#         for row in result:
 
-            night += " ".join(row)
+#             night += " ".join(row)
             
-        return night
-def start_game(username):
-    conn = sqlite3.connect(DB)
+#         return night
+# def switch_game(username):
+#     conn = sqlite3.connect(DB)
 
-    with conn:
-        cur = conn.cursor() 
-        cur.execute("INSERT INTO players (game_started) VALUES ('True') WHERE username is ?", ([username]))
-def increase_night(username):
-    conn = sqlite3.connect(DB)
+#     with conn:
+#         cur = conn.cursor() 
+        
+#         if select_game_started(username) == "False":
+#             cur.execute('INSERT INTO players (game_started) VALUES ("True") WHERE username is ?', ([username]))
+#         # else:
+#         #     cur.execute('INSERT INTO players (game_started) VALUES ("False") WHERE username is ?', ([username]))
+# def increase_night(username):
+#     conn = sqlite3.connect(DB)
 
-    with conn:
-        cur = conn.cursor() 
-        result = cur.execute("SELECT night FROM players WHERE username is ?", ([username]))
+#     with conn:
+#         cur = conn.cursor() 
+#         result = cur.execute("SELECT night FROM players WHERE username is ?", ([username]))
 
-        night = ""
+#         night = ""
 
-        for row in result:
+#         for row in result:
 
-            night += " ".join(row)
-        if night == "6":
-            night = 1
-        elif night == "0":
-            night = 1
-        elif night == "5":
-            night = 1
-        else:
-            night += "1"
-        cur.execute("INSERT INTO players (night) VALUES (?) WHERE username = ?", ([username], [night]))     
+#             night += " ".join(row)
+#         if night == "6":
+#             night = 1
+#         elif night == "0":
+#             night = 1
+#         elif night == "5":
+#             night = 1
+#         else:
+#             night += "1"
+#         cur.execute("INSERT INTO players (night) VALUES (?) WHERE username = ?", ([username], [night]))     
 if __name__ == "__main__": #Если файл запущен
     #update_wins('dark_lord_plagas', '0')
     #show_coins('dark_lord_plagas')
