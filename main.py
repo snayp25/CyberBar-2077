@@ -222,7 +222,7 @@ def win(message):
         end = True
         timer = 0 
         game_started = False
-        night += 1
+        db_manager.increase_night(username)
 
         markup = types.InlineKeyboardMarkup(row_width=2)
 
@@ -412,7 +412,8 @@ def callback(call):
     global night
     global hour
     global timer
-
+    #Для того чтобы было для каждого локально
+    global username
 
     if call.message: #Обработка нажатий
 
@@ -545,12 +546,12 @@ def callback(call):
         
 
         if call.data == 'button_game' or "button_game" in call.data: #Проверяем, нажали ли кнопку "Играть"
-
+            
             if night >= 6:
                     
                     night = 1
 
-            game_started = True
+            db_manager.start_game(username)
             
 
         if game_started: #Проверяем, запущена ли игра
@@ -589,7 +590,7 @@ def callback(call):
 
                 battery = 4
                 battery_timer = random.randint(100, 201)
-                db_manager.start_game(call.message.from_user.username)
+                db_manager.start_game(call.from_user.username)
                 timer = 630 
                 end = False
                 
@@ -1990,7 +1991,7 @@ def callback(call):
                 timer = 0 
                 game_started = False
                 go_cleaner = False
-                night += 1
+                db_manager.increase_night(username)
 
                 markup = types.InlineKeyboardMarkup(row_width=2)
 
